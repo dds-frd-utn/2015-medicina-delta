@@ -1,10 +1,11 @@
 package models
 
 case class Paciente(
-                     val nombre: String,
-                     val apellido: String,
-                     val dni: Long,
-                     val obraSocial: Int
+                     id: Long,
+                     nombre: String,
+                     apellido: String,
+                     dni: Long,
+                     obraSocial: Int
                      )
 
 object Paciente {

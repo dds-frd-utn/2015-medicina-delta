@@ -3,12 +3,13 @@ package models
 import java.util.Date
 
 case class Recepcion(
-                      val idPaciente: Long,
-                      val idMedico: Long,
-                      val fecha: Date,
-                      val estado: Int, // hasta implementar el state
-                      val diagnostico: String,
-                      val prioridad: String
+                      id: Long,
+                      idPaciente: Long,
+                      idMedico: Long,
+                      fecha: Date,
+                      estado: Int, // hasta implementar el state
+                      diagnostico: String,
+                      prioridad: String
                       )
 
 object Recepcion {
