@@ -1,14 +1,17 @@
 package controllers
 
 import actors.HelloActor.SayHello
+import models.Paciente
 import play.api._
+import play.api.libs.json.Json
 import play.api.mvc._
 import akka.actor._
 import javax.inject._
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 import scala.concurrent.duration._
 import akka.pattern.ask
-
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits._
 import actors.HelloActor
 
 @Singleton
@@ -23,4 +26,8 @@ class Application @Inject() (system: ActorSystem) extends Controller {
       Ok(message)
     }
   }
+
+
+
+
 }
