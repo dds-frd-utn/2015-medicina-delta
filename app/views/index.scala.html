@@ -1,7 +1,44 @@
-@(message: String)
-
+@import play.api.libs.json.JsValue
+@(json: JsValue)(form1: Form[Paciente])
+@import play.api.Play.current
+@import play.api.i18n.Messages.Implicits._
 @main("Welcome to Play") {
 
-    @play20.welcome(message)
+    @helper.form(action = routes.PacienteController.create, 'enctype -> "text/json") {
+        @helper.inputText(form1("id"))
+        @helper.inputText(form1("nombre"))
+        @helper.inputText(form1("apellido"))
+        @helper.inputText(form1("dni"))
+        @helper.inputText(form1("obrasocial"))
+        <input type="submit" value="Register">
+    }
 
+
+    <div class="panel panel-default">
+            <!-- Default panel contents -->
+        <div class="panel-heading">Lista de Pacientes</div>
+        <div>
+            <table class="table">
+                <row>
+                    <td><b>id</b></td>
+                    <td><b>nombre</b></td>
+                    <td><b>apellido</b></td>
+                    <td><b>dni</b></td>
+                    <td><b>obra social</b></td>
+                </row>
+                @for(p <- json.as[Seq[Paciente]]) {
+
+                    <tr>
+                        <td>@p.id</td>
+                        <td>@p.nombre</td>
+                        <td>@p.apellido</td>
+                        <td>@p.dni</td>
+                        <td>@p.obraSocial</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
 }
+
+

@@ -1,6 +1,6 @@
 package models
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{JsValue, Json, Format}
 import play.api.Play.current
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
@@ -43,6 +43,13 @@ object Paciente {
   def listar: Future[Seq[Paciente]] = {
     val listaDePacientes = tabla.result
     db.run(listaDePacientes)
+  }
+
+  def listarJSON: Future[JsValue] = {
+    val listaDePacientes = tabla.result
+    val movida = db.run(listaDePacientes)
+    val movidaJSON = movida map { p => Json.toJson(p)}
+    movidaJSON
   }
 
   def getByID(idPaciente: Long): Future[Option[Paciente]] = {

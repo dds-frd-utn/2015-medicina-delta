@@ -4,8 +4,8 @@
 
 # Home page
 GET         /sayHello/:name                   controllers.Application.sayHello(name:String)
-
-
+GET         /reverser/                        controllers.Application.reverser
+GET         /                                 controllers.PacienteController.listarPacientes
 ### API REST
 # Paciente
 POST        /pacientes/                       controllers.PacienteController.create

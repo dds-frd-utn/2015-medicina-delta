@@ -8,6 +8,15 @@ CREATE TABLE PACIENTES (
   obrasocial INT
 );
 
+CREATE TABLE MEDICOS (
+  id        INTEGER AUTO_INCREMENT PRIMARY KEY,
+  matricula INTEGER,
+  nombre    VARCHAR,
+  apellido  VARCHAR,
+  usuario   VARCHAR,
+  password  VARCHAR
+);
+
 CREATE TABLE RECEPCIONES (
   id          INTEGER AUTO_INCREMENT PRIMARY KEY,
   idMedico    INTEGER,
@@ -18,15 +27,6 @@ CREATE TABLE RECEPCIONES (
   fecha       DATETIME,
   FOREIGN KEY (idMedico) REFERENCES MEDICOS (id),
   FOREIGN KEY (idPaciente) REFERENCES PACIENTES (id)
-);
-
-CREATE TABLE MEDICOS (
-  id        INTEGER AUTO_INCREMENT PRIMARY KEY,
-  matricula INTEGER,
-  nombre    VARCHAR,
-  apellido  VARCHAR,
-  usuario   VARCHAR,
-  password  VARCHAR
 );
 
 CREATE TABLE ADMINISTRADORES (

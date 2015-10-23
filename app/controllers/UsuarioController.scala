@@ -1,5 +1,6 @@
 package controllers
 
+import controllers.responses.{SuccessResponse, ErrorResponse}
 import models.{Medico, Administrador}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
@@ -9,23 +10,23 @@ import play.api.libs.concurrent.Execution.Implicits._
 class UsuarioController extends Controller {
 
   def listarMedicos = Action.async {
-    val medicosFuture = Medico.listar
+    val medicos: Future[Seq[Medico]] = Medico.listar
 
-    val respuesta = medicosFuture.map { m =>
-      Ok(Json.toJson(m))
+    val respuesta = medicos.map { m =>
+      Ok(Json.toJson(SuccessResponse(m)))
     }
 
     respuesta
   }
 
   def getMedicoByID(medicoID: Long) = Action.async { request =>
-    val medicoFuture = Medico.getByID(medicoID)
+    val medico = Medico.getByID(medicoID)
 
-    medicoFuture.map { medico =>
-      medico.fold {
-        NotFound(Json.toJson(medico))
+    medico.map { m =>
+      m.fold {
+        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
       } { e =>
-        Ok(Json.toJson(medico))
+        Ok(Json.toJson(SuccessResponse(m)))
       }
     }
   }
@@ -34,35 +35,37 @@ class UsuarioController extends Controller {
     val incomingBody = request.body.validate[Medico]
 
     incomingBody.fold(error => {
-      Future.successful(BadRequest)
+      val errorMessage = s"Invalid JSON: ${error}"
+      val response = ErrorResponse(1, errorMessage)
+      Future.successful(BadRequest(Json.toJson(response)))
     }, { medico: Medico =>
-      val createdMedicoFuture = Medico.create(medico)
+      val createdMedico: Future[Medico] = Medico.create(medico)
 
-      createdMedicoFuture.map { createdMedico =>
-        Created(Json.toJson(createdMedico))
+      createdMedico.map { createdMedico =>
+        Created(Json.toJson(SuccessResponse(createdMedico)))
       }
 
     })
   }
 
   def listarAdministradores = Action.async {
-    val adminFuture = Administrador.listar
+    val administradores: Future[Seq[Administrador]] = Administrador.listar
 
-    val respuesta = adminFuture.map { a =>
-      Ok(Json.toJson(a))
+    val respuesta = administradores.map { a =>
+      Ok(Json.toJson(SuccessResponse(a)))
     }
 
     respuesta
   }
 
   def getAdminByID(adminID: Long) = Action.async { request =>
-    val adminFuture = Administrador.getByID(adminID)
+    val admin: Future[Option[Administrador]] = Administrador.getByID(adminID)
 
-    adminFuture.map { admin =>
-      admin.fold {
-        NotFound(Json.toJson(admin))
+    admin.map { a =>
+      a.fold {
+        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
       } { e =>
-        Ok(Json.toJson(admin))
+        Ok(Json.toJson(SuccessResponse(a)))
       }
     }
   }
@@ -71,11 +74,13 @@ class UsuarioController extends Controller {
     val incomingBody = request.body.validate[Administrador]
 
     incomingBody.fold(error => {
-      Future.successful(BadRequest)
+      val errorMessage = s"Invalid JSON: ${error}"
+      val response = ErrorResponse(1, errorMessage)
+      Future.successful(BadRequest(Json.toJson(response)))
     }, { administrador: Administrador =>
-      val createdAdminFuture = Administrador.create(administrador)
+      val createdAdmin = Administrador.create(administrador)
 
-      createdAdminFuture.map { createdAdmin =>
+      createdAdmin.map { createdAdmin =>
         Created(Json.toJson(createdAdmin))
       }
 

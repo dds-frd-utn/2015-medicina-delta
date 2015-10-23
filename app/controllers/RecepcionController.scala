@@ -1,7 +1,8 @@
 package controllers
 
+import controllers.responses.{ErrorResponse, SuccessResponse}
 import models.Recepcion
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResult, Json}
 import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
@@ -9,57 +10,50 @@ import play.api.libs.concurrent.Execution.Implicits._
 class RecepcionController extends Controller {
 
   def listarRecepciones = Action.async {
-    val recepcionesFuture = Recepcion.listar
-
-    val respuesta = recepcionesFuture.map { r =>
-      Ok(Json.toJson(r))
+    val recepciones: Future[Seq[Recepcion]] = Recepcion.listar
+    val respuesta = recepciones.map { r =>
+      Ok(Json.toJson(SuccessResponse(r)))
     }
 
     respuesta
   }
 
   def getByID(recepcionID: Long) = Action.async { request =>
-    val recepcionFuture = Recepcion.getByID(recepcionID)
+    val recepcion: Future[Option[Recepcion]] = Recepcion.getByID(recepcionID)
 
-    recepcionFuture.map { r =>
+    recepcion.map { r =>
       r.fold {
-        NotFound(Json.toJson(r))
-      } { e =>
-        Ok(Json.toJson(r))
-      }
+        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
+      } { e => Ok(Json.toJson(SuccessResponse(r))) }
     }
   }
 
   def getByMedico(medicoID: Long) = Action.async { request =>
-    val recepcionesDelMedicoFuture = Recepcion.getByMedico(medicoID)
-    val respuesta = recepcionesDelMedicoFuture map { r =>
-      Ok(Json.toJson(r))
-    }
-
+    val recepcionesDelMedico: Future[Seq[Recepcion]] = Recepcion.getByMedico(medicoID)
+    val respuesta = recepcionesDelMedico map { r => Ok(Json.toJson(r)) }
     respuesta
   }
 
 
   def getByPaciente(pacienteID: Long) = Action.async { request =>
-    val recepcionesDelPacienteFuture = Recepcion.getByPaciente(pacienteID)
-    val respuesta = recepcionesDelPacienteFuture map { r =>
-      Ok(Json.toJson(r))
-    }
+    val recepcionesDelPaciente: Future[Seq[Recepcion]] = Recepcion.getByPaciente(pacienteID)
+    val respuesta = recepcionesDelPaciente map { r => Ok(Json.toJson(SuccessResponse(r))) }
     respuesta
   }
 
   def create = Action.async(parse.json) { request =>
-    val incomingBody = request.body.validate[Recepcion]
+    val incomingBody: JsResult[Recepcion] = request.body.validate[Recepcion]
 
     incomingBody.fold(error => {
-      Future.successful(BadRequest)
-    }, { recepcion: Recepcion =>
-      val createdRecepcionFuture = Recepcion.create(recepcion)
+      val errorMessage = s"Invalid JSON: ${error}"
+      val response = ErrorResponse(1, errorMessage)
+      Future.successful(BadRequest(Json.toJson(response)))
+    }, { r: Recepcion =>
+      val createdRecepcion: Future[Recepcion] = Recepcion.create(r)
 
-      createdRecepcionFuture.map { createdRecepcion =>
-        Created(Json.toJson(createdRecepcion))
+      createdRecepcion.map { createdRecepcion =>
+        Created(Json.toJson(SuccessResponse(createdRecepcion)))
       }
-
     })
   }
 }

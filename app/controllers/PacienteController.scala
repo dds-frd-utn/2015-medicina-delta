@@ -1,31 +1,45 @@
 package controllers
 
+import controllers.responses._
 import models.Paciente
+import play.api.data._
+import play.api.data.Forms.mapping
+import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 
+
 class PacienteController extends Controller {
 
+  private val pacienteForm: Form[Paciente] = Form(
+    mapping(
+      "id" -> longNumber,
+      "nombre" -> text,
+      "apellido" -> text,
+      "dni" -> longNumber,
+      "obrasocial" -> number
+    )(Paciente.apply)(Paciente.unapply)
+  )
+
   def listarPacientes = Action.async {
-    val pacientesFuture = Paciente.listar
+    val pacientes: Future[Seq[Paciente]] = Paciente.listar
 
-    val respuesta = pacientesFuture.map { p =>
-      Ok(Json.toJson(p))
+    val respuesta = pacientes.map { p =>
+      Ok(Json.toJson(SuccessResponse(p)))
     }
-
     respuesta
   }
 
   def getByID(pacienteID: Long) = Action.async { request =>
-    val pacienteFuture = Paciente.getByID(pacienteID)
+    val paciente: Future[Option[Paciente]] = Paciente.getByID(pacienteID)
 
-    pacienteFuture.map { paciente =>
-      paciente.fold {
-        NotFound(Json.toJson(paciente))
+    paciente.map { p =>
+      p.fold {
+        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
       } { e =>
-        Ok(Json.toJson(paciente))
+        Ok(Json.toJson(SuccessResponse(p)))
       }
     }
   }
@@ -34,12 +48,14 @@ class PacienteController extends Controller {
     val incomingBody = request.body.validate[Paciente]
 
     incomingBody.fold(error => {
-      Future.successful(BadRequest)
+      val errorMessage = s"Invalid JSON: ${error}"
+      val response = ErrorResponse(1, errorMessage)
+      Future.successful(BadRequest(Json.toJson(response)))
     }, { paciente: Paciente =>
-      val createdPacienteFuture = Paciente.create(paciente)
+      val createdPaciente: Future[Paciente] = Paciente.create(paciente)
 
-      createdPacienteFuture.map { createdPaciente =>
-        Created(Json.toJson(createdPaciente))
+      createdPaciente.map { createdPaciente =>
+        Created(Json.toJson(SuccessResponse(createdPaciente)))
       }
 
     })
