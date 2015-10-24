@@ -1,19 +1,24 @@
 @import play.api.libs.json.JsValue
-@(json: JsValue)(form1: Form[Paciente])
+@(json: JsValue)
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 @main("Welcome to Play") {
 
-    @helper.form(action = routes.PacienteController.create, 'enctype -> "text/json") {
-        @helper.inputText(form1("id"))
-        @helper.inputText(form1("nombre"))
-        @helper.inputText(form1("apellido"))
-        @helper.inputText(form1("dni"))
-        @helper.inputText(form1("obrasocial"))
-        <input type="submit" value="Register">
-    }
-
-
+    <div  id="formulario" enctype='application/json' >
+        <form class="form-group" action="/pacientes/" method="POST">
+            <input name="id" type="text" placeholder="ID"/>
+            <input name="nombre" type="text" placeholder="Nombre"/>
+            <input name="apellido" type="text" placeholder="Apellido"/>
+            <input name="dni" type="text" placeholder="DNI"/>
+            <input name="obrasocial" type="text" placeholder="Obra social"/>
+            <button type="submit" name="action">Agregar</button>
+        </form>
+    </div>
+    <script>
+    var formData = $("form.form-group").serializeObject_(formData,jsonString) ;
+    var jsonString = JSON.stringify(formData);
+    console.log(jsonString);
+   </script>
     <div class="panel panel-default">
             <!-- Default panel contents -->
         <div class="panel-heading">Lista de Pacientes</div>

@@ -27,9 +27,16 @@ class Application @Inject()(system: ActorSystem) extends Controller {
     }
   }
 
+  def mostrarContador = Action {
+    Ok(views.html.websocketCounter())
+  }
+
 
   def reverser = WebSocket.acceptWithActor[String,String] { request => out => Reverser.props(out) }
 
-  // def sendJSON = WebSocket.acceptWithActor[JsValue, JsValue]  { req => out => WebSocketChannel.props(out)}
+  def sendJSON = WebSocket.acceptWithActor[JsValue, String] { req => out => WebSocketChannel.props(out)}
 
+  def getPacientes = WebSocket.acceptWithActor[JsValue, JsValue] { req => out => DBActor.props(out)}
+
+  def contador = WebSocket.acceptWithActor[String,String] { request => out => WebSocketContador.props(out) }
 }

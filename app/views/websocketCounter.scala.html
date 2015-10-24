@@ -1,0 +1,22 @@
+@main("Contador con websocket") {
+
+    <button id="boton" onclick="aumentar()"></button>
+
+    <script>
+    // abro la conexion del websocket
+
+    var boton = document.getElementById("boton");
+    boton.value = "0"
+    boton.innerHTML = boton.value
+    var websocket = new WebSocket("ws://localhost:9000/contador/");
+
+    function aumentar() {
+      websocket.send(boton.value);
+    };
+
+    websocket.onmessage = function (event) {
+    boton.value  = event.data
+    boton.innerHTML = boton.value
+};
+  </script>
+}

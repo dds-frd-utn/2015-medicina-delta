@@ -27,7 +27,7 @@ class PacienteController extends Controller {
     val pacientes: Future[Seq[Paciente]] = Paciente.listar
 
     val respuesta = pacientes.map { p =>
-      Ok(Json.toJson(SuccessResponse(p)))
+      Ok(Json.toJson(SuccessResponse(p).response))
     }
     respuesta
   }
@@ -42,6 +42,12 @@ class PacienteController extends Controller {
         Ok(Json.toJson(SuccessResponse(p)))
       }
     }
+  }
+
+  def insert = Action.async { implicit request =>
+    val data: Paciente = pacienteForm.bindFromRequest.get
+    val pacienteCreado = Paciente.create(data)
+    pacienteCreado.map {_ => Redirect(routes.PacienteController.listarPacientes)}
   }
 
   def create = Action.async(parse.json) { request =>

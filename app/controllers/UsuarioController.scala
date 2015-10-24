@@ -2,12 +2,24 @@ package controllers
 
 import controllers.responses.{SuccessResponse, ErrorResponse}
 import models.{Medico, Administrador}
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 
 class UsuarioController extends Controller {
+
+  private val medicoForm: Form[Medico] = Form(
+    mapping(
+      "id" -> longNumber,
+      "nombre" -> text,
+      "apellido" -> text,
+      "matricula" -> longNumber,
+      "usuario" -> text,
+      "password" -> text
+    )(Medico.apply)(Medico.unapply))
 
   def listarMedicos = Action.async {
     val medicos: Future[Seq[Medico]] = Medico.listar
@@ -17,6 +29,12 @@ class UsuarioController extends Controller {
     }
 
     respuesta
+  }
+
+  def insertMedico = Action.async { implicit request =>
+    val datosDeMedico: Medico = medicoForm.bindFromRequest.get
+    val medicoCreado = Medico.create(datosDeMedico)
+    medicoCreado.map { _ => Redirect(routes.UsuarioController.listarMedicos) }
   }
 
   def getMedicoByID(medicoID: Long) = Action.async { request =>
@@ -46,6 +64,21 @@ class UsuarioController extends Controller {
       }
 
     })
+  }
+
+  private val adminForm: Form[Administrador] = Form(
+    mapping(
+      "id" -> longNumber,
+      "nombre" -> text,
+      "apellido" -> text,
+      "usuario" -> text,
+      "password" -> text
+    )(Administrador.apply)(Administrador.unapply))
+
+  def insertAdmin = Action.async { implicit request =>
+    val datosDeAdmin: Administrador = adminForm.bindFromRequest.get
+    val medicoCreado = Administrador.create(datosDeAdmin)
+    medicoCreado.map { _ => Redirect(routes.UsuarioController.listarAdministradores) }
   }
 
   def listarAdministradores = Action.async {

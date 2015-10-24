@@ -3,13 +3,19 @@
 # ~~~~
 
 # Home page
+# Pruebas de actores
 GET         /sayHello/:name                   controllers.Application.sayHello(name:String)
 GET         /reverser/                        controllers.Application.reverser
 GET         /                                 controllers.PacienteController.listarPacientes
+GET         /websocket/                       controllers.Application.sendJSON
+GET         /getPacientes                     controllers.Application.getPacientes
+GET         /contador/                        controllers.Application.contador
+GET         /mostrarContador/                  controllers.Application.mostrarContador
 ### API REST
 # Paciente
-POST        /pacientes/                       controllers.PacienteController.create
+
 GET         /pacientes/                       controllers.PacienteController.listarPacientes
+POST        /pacientes/                       controllers.PacienteController.create
 GET         /pacientes/:id                    controllers.PacienteController.getByID(id:Long)
 
 # Medico
