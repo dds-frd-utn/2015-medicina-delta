@@ -1,49 +1,7 @@
-@import play.api.libs.json.JsValue
-@(json: JsValue)
-@import play.api.Play.current
-@import play.api.i18n.Messages.Implicits._
-@main("Welcome to Play") {
+@()
 
-    <div  id="formulario" enctype='application/json' >
-        <form class="form-group" action="/pacientes/" method="POST">
-            <input name="id" type="text" placeholder="ID"/>
-            <input name="nombre" type="text" placeholder="Nombre"/>
-            <input name="apellido" type="text" placeholder="Apellido"/>
-            <input name="dni" type="text" placeholder="DNI"/>
-            <input name="obrasocial" type="text" placeholder="Obra social"/>
-            <button type="submit" name="action">Agregar</button>
-        </form>
-    </div>
-    <script>
-    var formData = $("form.form-group").serializeObject_(formData,jsonString) ;
-    var jsonString = JSON.stringify(formData);
-    console.log(jsonString);
-   </script>
-    <div class="panel panel-default">
-            <!-- Default panel contents -->
-        <div class="panel-heading">Lista de Pacientes</div>
-        <div>
-            <table class="table">
-                <row>
-                    <td><b>id</b></td>
-                    <td><b>nombre</b></td>
-                    <td><b>apellido</b></td>
-                    <td><b>dni</b></td>
-                    <td><b>obra social</b></td>
-                </row>
-                @for(p <- json.as[Seq[Paciente]]) {
 
-                    <tr>
-                        <td>@p.id</td>
-                        <td>@p.nombre</td>
-                        <td>@p.apellido</td>
-                        <td>@p.dni</td>
-                        <td>@p.obraSocial</td>
-                    </tr>
-                }
-            </table>
-        </div>
-    </div>
+@main("Titulo") {
+    <h2>Hola</h2>
 }
-
 

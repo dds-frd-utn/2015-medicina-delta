@@ -15,6 +15,8 @@ case class Paciente(
                      obraSocial: Int
                      )
 
+case class DatosPaciente(nombre: String, apellido: String, dni: Long, obrasocial: Int)
+
 object Paciente {
 
   implicit val format: Format[Paciente] = Json.format[Paciente]
@@ -48,7 +50,7 @@ object Paciente {
   def listarJSON: Future[JsValue] = {
     val listaDePacientes = tabla.result
     val movida = db.run(listaDePacientes)
-    val movidaJSON = movida map { p => Json.toJson(p)}
+    val movidaJSON = movida map { p => Json.toJson(p) }
     movidaJSON
   }
 

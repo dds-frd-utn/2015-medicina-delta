@@ -1,0 +1,27 @@
+@(form: Form[DatosPaciente])
+
+@main("Agregar Paciente") {
+    <form id="formulario">
+        <input name="nombre" type="text" placeholder="Nombre de la receta"/>
+        <input name="ingredientes" type="text" placeholder="Ingredientes"/>
+        <input name="instrucciones" type="text" placeholder="Instrucciones"/>
+        <input name="imagen" type="text" placeholder="Imagen"/>
+        <button type="submit" name="action" onclick="enviarFormulario()">Submit</button>
+    </form>
+
+    <script>
+    function enviarFormulario() {
+    datos = $("#formulario").serializeObject();
+    $.ajax({
+    url: '@routes.PacienteController.insert',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(datos),
+    dataType: 'json',
+    success: function(e) {
+    console.log(e)
+    }
+   });
+    }
+    </script>
+}

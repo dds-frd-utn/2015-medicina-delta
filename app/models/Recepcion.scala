@@ -1,23 +1,39 @@
 package models
 
-import java.sql.Date
+
+import java.sql.{Timestamp, Date}
 
 import play.api.Play._
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Format}
+import slick.driver.H2Driver._
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
+import java.time._
 
+/*
+ TODO
+ Cada vez que se crea una recepcion crear un actor con la misma id cuyo supervisor es el actor del websocket
+ cada vez que se envia un mensaje al websocket, este lo dirige al actor correspondiente para cambiar su estado
+ luego cuando ya es atendido lo destruye
+ */
 case class Recepcion(
                       id: Long,
                       idPaciente: Long,
                       idMedico: Long,
-                      fecha: Date,
+                      fecha: LocalDateTime,
                       estado: Int, // hasta implementar el state
-                      diagnostico: String,
+                      diagnostico: Option[String],
                       prioridad: String
                       )
+
+case class DatosRecepcion(
+                           idPaciente: Long,
+                           idMedico: Long,
+                           diagnostico: Option[String],
+                           prioridad: String
+                           )
 
 object Recepcion {
   implicit val format: Format[Recepcion] = Json.format[Recepcion]
@@ -28,13 +44,19 @@ object Recepcion {
 
   class TablaRecepciones(tag: Tag) extends Table[Recepcion](tag, "RECEPCIONES") {
 
+
+    implicit val localDateTimeColumn = MappedColumnType.base[LocalDateTime, Timestamp](
+    d => Timestamp.from(d.toInstant(ZoneOffset.ofHours(0))),
+    d => d.toLocalDateTime
+  )
+
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
 
     def idPaciente = column[Long]("ID")
 
     def idMedico = column[Long]("ID")
 
-    def fecha = column[Date]("FECHA")
+    def fecha = column[LocalDateTime]("FECHA")
 
     def estado = column[Int]("ESTADO")
 
@@ -46,7 +68,7 @@ object Recepcion {
 
     def medico = foreignKey("TB_MEDICO", idMedico, Medico.tabla)(_.id)
 
-    def * = (id, idPaciente, idMedico, fecha, estado, diagnostico, prioridad) <>((Recepcion.apply _).tupled, Recepcion.unapply _)
+    def * = (id, idPaciente, idMedico, fecha, estado, diagnostico.?, prioridad) <>((Recepcion.apply _).tupled, Recepcion.unapply _)
   }
 
   val tabla = TableQuery[TablaRecepciones]
@@ -88,5 +110,6 @@ object Recepcion {
 
     copiaRecepcion
   }
+
 
 }

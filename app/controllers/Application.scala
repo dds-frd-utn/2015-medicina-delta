@@ -7,7 +7,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import akka.actor._
 import javax.inject._
-
+import actors.DBActor
 import scala.concurrent.duration._
 import akka.pattern.ask
 import scala.concurrent.Future
@@ -20,6 +20,9 @@ class Application @Inject()(system: ActorSystem) extends Controller {
   implicit val timeout: akka.util.Timeout = 5.seconds
   val helloActor = system.actorOf(HelloActor.props, "hello-actor")
 
+  def index = Action {
+    Ok(views.html.index())
+  }
 
   def sayHello(name: String) = Action.async {
     (helloActor ? SayHello(name)).mapTo[String].map { message =>
@@ -31,12 +34,17 @@ class Application @Inject()(system: ActorSystem) extends Controller {
     Ok(views.html.websocketCounter())
   }
 
+  def test = Action {
+    Ok(views.html.listarPacientesJSON())
+  }
+
+  val dbActor = system.actorOf(DBActor.props, "db-actor")
 
   def reverser = WebSocket.acceptWithActor[String,String] { request => out => Reverser.props(out) }
 
   def sendJSON = WebSocket.acceptWithActor[JsValue, String] { req => out => WebSocketChannel.props(out)}
 
-  def getPacientes = WebSocket.acceptWithActor[JsValue, JsValue] { req => out => DBActor.props(out)}
+  val contador = WebSocket.acceptWithActor[String,String] { request => out => WebSocketContador.props(out) }
 
-  def contador = WebSocket.acceptWithActor[String,String] { request => out => WebSocketContador.props(out) }
+  def jsonManager = WebSocket.acceptWithActor[String, JsValue] { request => out => JsonManager.props(out, dbActor)}
 }

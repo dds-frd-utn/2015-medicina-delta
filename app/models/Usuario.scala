@@ -26,6 +26,8 @@ final case class Medico(
                          )
   extends Usuario
 
+case class DatosMedico(nombre: String, apellido: String, matricula: Long, usuario: String, password: String)
+
 object Medico {
 
   implicit val format: Format[Medico] = Json.format[Medico]
@@ -86,6 +88,8 @@ final case class Administrador(
                                 password: String
                                 )
   extends Usuario
+
+case class DatosAdmin(nombre: String, apellido: String, usuario: String, password: String)
 
 object Administrador {
 

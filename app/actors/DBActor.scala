@@ -1,27 +1,32 @@
 package actors
 
-import actors.DBActor.{QueryByID, Insert}
+import actors.DBActor.Agregar
+import actors.JsonManager.Lista
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import akka.actor.{Props, Actor, ActorRef}
 import models.Paciente
 import play.api.libs.json.{Json, JsValue}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DBActor(outChannel: ActorRef) extends Actor {
+class DBActor extends Actor {
   val timeout: Duration = 5.seconds
 
   def receive = {
-    case Insert(paciente: Paciente) => Paciente.create(paciente)
-    case QueryByID(id: Long) => Paciente.getByID(id)
+
+    case Agregar(json: String) => {
+      println("DBactor: Recibi json")
+      val jsonToPaciente = Json.parse(json).validate[Paciente]
+      Paciente.create(jsonToPaciente.get)
+      val lista = Paciente.listar.map { xs => sender() ! Lista(Json.toJson(xs)) }
+    }
   }
 }
 
 object DBActor {
-  def props(outChannel: ActorRef) = Props(classOf[DBActor], outChannel)
+  def props = Props[DBActor]
 
-  case class Insert(paciente: Paciente)
-
-  case class QueryByID(id: Long)
+  case class Agregar(json: String)
 
 }

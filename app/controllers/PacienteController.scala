@@ -1,7 +1,9 @@
 package controllers
 
+import java.util.UUID
+
 import controllers.responses._
-import models.Paciente
+import models.{DatosPaciente, Paciente}
 import play.api.data._
 import play.api.data.Forms.mapping
 import play.api.data.Forms._
@@ -13,16 +15,20 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 class PacienteController extends Controller {
 
-  private val pacienteForm: Form[Paciente] = Form(
+  private val formularioPaciente: Form[DatosPaciente] = Form(
     mapping(
-      "id" -> longNumber,
       "nombre" -> text,
       "apellido" -> text,
       "dni" -> longNumber,
       "obrasocial" -> number
-    )(Paciente.apply)(Paciente.unapply)
+    )(DatosPaciente.apply)(DatosPaciente.unapply)
   )
 
+
+
+  def agregar = Action {
+    Ok(views.html.pacientes.nuevoPaciente(formularioPaciente))
+  }
   def listarPacientes = Action.async {
     val pacientes: Future[Seq[Paciente]] = Paciente.listar
 
@@ -45,8 +51,10 @@ class PacienteController extends Controller {
   }
 
   def insert = Action.async { implicit request =>
-    val data: Paciente = pacienteForm.bindFromRequest.get
-    val pacienteCreado = Paciente.create(data)
+    val datos: DatosPaciente = formularioPaciente.bindFromRequest.get
+    val idNueva = UUID.randomUUID.getLeastSignificantBits
+    val nuevoPaciente: Paciente = Paciente(idNueva, datos.nombre,datos.apellido,datos.dni,datos.obrasocial)
+    val pacienteCreado = Paciente.create(nuevoPaciente)
     pacienteCreado.map {_ => Redirect(routes.PacienteController.listarPacientes)}
   }
 
