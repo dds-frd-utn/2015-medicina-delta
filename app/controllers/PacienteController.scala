@@ -27,7 +27,7 @@ class PacienteController extends Controller {
 
 
   def agregar = Action {
-    Ok(views.html.pacientes.nuevoPaciente(formularioPaciente))
+    Ok(views.html.pacientes.add(formularioPaciente))
   }
   def listarPacientes = Action.async {
     val pacientes: Future[Seq[Paciente]] = Paciente.listar

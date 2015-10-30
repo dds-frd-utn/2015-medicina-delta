@@ -14,6 +14,7 @@ sealed trait Usuario {
   val apellido: String
   val usuario: String
   val password: String
+   val rol: String
 }
 
 final case class Medico(
@@ -24,7 +25,9 @@ final case class Medico(
                          usuario: String,
                          password: String
                          )
-  extends Usuario
+  extends Usuario {
+  val rol = "medico"
+}
 
 case class DatosMedico(nombre: String, apellido: String, matricula: Long, usuario: String, password: String)
 
@@ -87,7 +90,9 @@ final case class Administrador(
                                 usuario: String,
                                 password: String
                                 )
-  extends Usuario
+  extends Usuario {
+  val rol = "administrador"
+}
 
 case class DatosAdmin(nombre: String, apellido: String, usuario: String, password: String)
 
