@@ -1,24 +1,14 @@
-@(form: Form[DatosPaciente])
-
+@(pform: Form[DatosPaciente])(implicit messages: Messages)
+@import helper._
 @main("Agregar Paciente") {
 
-    <form role="form">
-        <div class="form-group">
-            <label for="nombre">Nombre:</label>
-            <input type="text" class="form-control" id="nombre">
-        </div>
-        <div class="form-group">
-            <label for="apellido">Apellido:</label>
-            <input type="text" class="form-control" id="apellido">
-        </div>
-        <div class="form-group">
-            <label for="dni">DNI:</label>
-            <input type="number" class="form-control" id="dni">
-        </div>
-        <div class="form-group">
-            <label for="obrasocial">Obra Social:</label>
-            <input type="number" class="form-control" id="obrasocial">
-        </div>
-        <button type="submit" class="btn btn-default">Agregar</button>
-    </form>
+    @helper.form(action = routes.PacienteController.insert) {
+        @inputText(pform("nombre"))
+        @inputText(pform("apellido"))
+        @inputText(pform("dni"))
+        @inputText(pform("obrasocial"))
+
+        <input type="submit" value="Submit">
+    }
+
 }

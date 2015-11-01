@@ -11,7 +11,8 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
-
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 
 class PacienteController extends Controller {
 
@@ -24,12 +25,11 @@ class PacienteController extends Controller {
     )(DatosPaciente.apply)(DatosPaciente.unapply)
   )
 
-
-
-  def agregar = Action {
+  def add = Action {
     Ok(views.html.pacientes.add(formularioPaciente))
   }
-  def listarPacientes = Action.async {
+
+  def list = Action.async {
     val pacientes: Future[Seq[Paciente]] = Paciente.listar
 
     val respuesta = pacientes.map { p =>
@@ -53,25 +53,9 @@ class PacienteController extends Controller {
   def insert = Action.async { implicit request =>
     val datos: DatosPaciente = formularioPaciente.bindFromRequest.get
     val idNueva = UUID.randomUUID.getLeastSignificantBits
-    val nuevoPaciente: Paciente = Paciente(idNueva, datos.nombre,datos.apellido,datos.dni,datos.obrasocial)
+    val nuevoPaciente: Paciente = Paciente(idNueva, datos.nombre, datos.apellido, datos.dni, datos.obrasocial)
     val pacienteCreado = Paciente.create(nuevoPaciente)
-    pacienteCreado.map {_ => Redirect(routes.PacienteController.listarPacientes)}
+    pacienteCreado.map { _ => Redirect(routes.PacienteController.list) }
   }
 
-  def create = Action.async(parse.json) { request =>
-    val incomingBody = request.body.validate[Paciente]
-
-    incomingBody.fold(error => {
-      val errorMessage = s"Invalid JSON: ${error}"
-      val response = ErrorResponse(1, errorMessage)
-      Future.successful(BadRequest(Json.toJson(response)))
-    }, { paciente: Paciente =>
-      val createdPaciente: Future[Paciente] = Paciente.create(paciente)
-
-      createdPaciente.map { createdPaciente =>
-        Created(Json.toJson(SuccessResponse(createdPaciente)))
-      }
-
-    })
-  }
 }

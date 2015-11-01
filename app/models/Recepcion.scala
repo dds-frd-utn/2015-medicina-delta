@@ -23,7 +23,6 @@ case class Recepcion(
                       idPaciente: Long,
                       idMedico: Long,
                       fecha: LocalDateTime,
-                      estado: Int, // hasta implementar el state
                       diagnostico: Option[String],
                       prioridad: String
                       )
@@ -52,13 +51,11 @@ object Recepcion {
 
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
 
-    def idPaciente = column[Long]("ID")
+    def idPaciente = column[Long]("IDPACIENTE")
 
-    def idMedico = column[Long]("ID")
+    def idMedico = column[Long]("IDMEDICO")
 
     def fecha = column[LocalDateTime]("FECHA")
-
-    def estado = column[Int]("ESTADO")
 
     def diagnostico = column[String]("DIAGNOSTICO")
 
@@ -68,7 +65,7 @@ object Recepcion {
 
     def medico = foreignKey("TB_MEDICO", idMedico, Medico.tabla)(_.id)
 
-    def * = (id, idPaciente, idMedico, fecha, estado, diagnostico.?, prioridad) <>((Recepcion.apply _).tupled, Recepcion.unapply _)
+    def * = (id, idPaciente, idMedico, fecha, diagnostico.?, prioridad) <>((Recepcion.apply _).tupled, Recepcion.unapply _)
   }
 
   val tabla = TableQuery[TablaRecepciones]
@@ -110,6 +107,5 @@ object Recepcion {
 
     copiaRecepcion
   }
-
 
 }

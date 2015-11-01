@@ -12,26 +12,29 @@ GET         /websocket/                       controllers.Application.sendJSON
 GET         /contador/                        controllers.Application.contador
 GET         /mostrarContador/                 controllers.Application.mostrarContador
 GET         /jsonManager/                     controllers.Application.jsonManager
-### API REST
+
 # Paciente
-GET         /pacientes/agregar/               controllers.PacienteController.agregar
-GET         /pacientes/                       controllers.PacienteController.listarPacientes
+GET         /pacientes/                       controllers.PacienteController.list
+GET         /pacientes/agregar/               controllers.PacienteController.add
 POST        /pacientes/                       controllers.PacienteController.insert
 GET         /pacientes/:id                    controllers.PacienteController.getByID(id:Long)
 
 # Medico
-POST        /medicos/                         controllers.UsuarioController.createMedico
-GET         /medicos/                         controllers.UsuarioController.listarMedicos
-GET         /medicos/:id                      controllers.UsuarioController.getMedicoByID(id:Long)
+GET         /medicos/                         controllers.MedicoController.list
+GET         /medicos/agregar/                 controllers.MedicoController.add
+POST        /medicos/                         controllers.MedicoController.insert
+GET         /medicos/:id                      controllers.MedicoController.getByID(id:Long)
 
 # Administrador
-POST        /administradores/                 controllers.UsuarioController.createAdmin
-GET         /administradores/                 controllers.UsuarioController.listarAdministradores
-GET         /administradores/:id              controllers.UsuarioController.getAdminByID(id:Long)
+GET         /administradores/                 controllers.AdminController.list
+GET         /administradores/agregar/         controllers.AdminController.add
+POST        /administradores/                 controllers.AdminController.insert
+GET         /administradores/:id              controllers.AdminController.getByID(id:Long)
 
 # Recepcion
-POST        /recepciones/                     controllers.RecepcionController.create
-GET         /recepciones/                     controllers.RecepcionController.listarRecepciones
+GET         /recepciones/                     controllers.RecepcionController.list
+GET         /recepciones/agregar/             controllers.RecepcionController.add
+POST        /recepciones/                     controllers.RecepcionController.insert
 GET         /recepciones/:id/pacientes        controllers.RecepcionController.getByMedico(id:Long)
 GET         /recepciones/:id/turnos           controllers.RecepcionController.getByPaciente(id:Long)
 GET         /recepciones/:id                  controllers.RecepcionController.getByID(id:Long)

@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+@(recepcionForm: Form[DatosRecepcion])(implicit messages: Messages)
+@import helper._
 
-</body>
-</html>
+@main("Agregar Recepción") {
+
+    @helper.form(action = routes.RecepcionController.insert) {
+        @inputText(recepcionForm("idMedico"))
+        @inputText(recepcionForm("idPaciente"))
+        @inputText(recepcionForm("diagnostico"))
+        @inputText(recepcionForm("prioridad"))
+        <input type="submit" value="Submit">
+    }
+}
