@@ -1,7 +1,6 @@
 package controllers
 
 import java.util.UUID
-import controllers.responses.{SuccessResponse, ErrorResponse}
 import models.{Medico, DatosMedico}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,7 +26,7 @@ class MedicoController extends Controller {
     val medicos: Future[Seq[Medico]] = Medico.listar
 
     val respuesta = medicos.map { m =>
-      Ok(Json.toJson(SuccessResponse(m)))
+      Ok(Json.toJson(m))
     }
 
     respuesta
@@ -48,7 +47,7 @@ class MedicoController extends Controller {
       datosDeMedico.usuario,
       datosDeMedico.password)
     val medicoCreado = Medico.create(nuevoMedico)
-    medicoCreado.map { _ => Redirect(routes.MedicoController.list) }
+    medicoCreado.map { _ => Redirect(routes.MedicoController.list()) }
   }
 
   def getByID(medicoID: Long) = Action.async { request =>
@@ -56,9 +55,9 @@ class MedicoController extends Controller {
 
     medico.map { m =>
       m.fold {
-        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
+        NotFound(Json.toJson("No encontrado"))
       } { e =>
-        Ok(Json.toJson(SuccessResponse(m)))
+        Ok(Json.toJson(m))
       }
     }
   }

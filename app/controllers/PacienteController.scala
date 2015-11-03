@@ -2,7 +2,6 @@ package controllers
 
 import java.util.UUID
 
-import controllers.responses._
 import models.{DatosPaciente, Paciente}
 import play.api.data._
 import play.api.data.Forms.mapping
@@ -33,7 +32,7 @@ class PacienteController extends Controller {
     val pacientes: Future[Seq[Paciente]] = Paciente.listar
 
     val respuesta = pacientes.map { p =>
-      Ok(Json.toJson(SuccessResponse(p).response))
+      Ok(Json.toJson(p))
     }
     respuesta
   }
@@ -43,9 +42,9 @@ class PacienteController extends Controller {
 
     paciente.map { p =>
       p.fold {
-        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
+        NotFound(Json.toJson("No encontrado"))
       } { e =>
-        Ok(Json.toJson(SuccessResponse(p)))
+        Ok(Json.toJson(p))
       }
     }
   }
@@ -55,7 +54,7 @@ class PacienteController extends Controller {
     val idNueva = UUID.randomUUID.getLeastSignificantBits
     val nuevoPaciente: Paciente = Paciente(idNueva, datos.nombre, datos.apellido, datos.dni, datos.obrasocial)
     val pacienteCreado = Paciente.create(nuevoPaciente)
-    pacienteCreado.map { _ => Redirect(routes.PacienteController.list) }
+    pacienteCreado.map { _ => Redirect(routes.PacienteController.list()) }
   }
 
 }

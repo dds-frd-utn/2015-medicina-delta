@@ -18,7 +18,18 @@
             <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     </head>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img alt="Brand" src="@routes.Assets.versioned("images/favicon.png")">
+                </a>
+            </div>
+        </div>
+    </nav>
     <body>
-    @content
+        <div class="container">
+            @content
+        </div>
     </body>
 </html>

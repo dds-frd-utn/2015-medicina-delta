@@ -12,10 +12,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "1.1.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "1.1.0",
   "com.h2database" % "h2" % "1.4.187",
-  "org.webjars" % "react" % "0.14.0",
-  "org.webjars" % "jquery" % "2.1.4",
-  "org.webjars" % "requirejs" % "2.1.20",
-  "org.webjars" % "react-bootstrap" % "0.25.1"
+  "org.webjars" % "jquery" % "2.1.4"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

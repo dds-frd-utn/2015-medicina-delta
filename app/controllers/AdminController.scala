@@ -2,7 +2,6 @@ package controllers
 
 import java.util.UUID
 
-import controllers.responses.{ErrorResponse, SuccessResponse}
 import models.{DatosAdmin, Administrador}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -37,13 +36,13 @@ class AdminController extends Controller {
       datosDeAdmin.usuario,
       datosDeAdmin.password)
     val adminCreado = Administrador.create(nuevoAdmin)
-    adminCreado.map { _ => Redirect(routes.AdminController.list) }
+    adminCreado.map { _ => Redirect(routes.AdminController.list()) }
   }
 
   def list = Action.async {
     val administradores: Future[Seq[Administrador]] = Administrador.listar
     val respuesta = administradores.map { a =>
-      Ok(Json.toJson(SuccessResponse(a)))
+      Ok(Json.toJson(a))
     }
     respuesta
   }
@@ -53,11 +52,14 @@ class AdminController extends Controller {
 
     admin.map { a =>
       a.fold {
-        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
+        NotFound(Json.toJson("No encontrado"))
       } { e =>
-        Ok(Json.toJson(SuccessResponse(a)))
+        Ok(Json.toJson(a))
       }
     }
   }
 
+  def menu = Action { implicit request =>
+    Ok(views.html.administradores.menu.render())
+  }
 }

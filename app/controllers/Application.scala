@@ -21,8 +21,10 @@ class Application @Inject()(system: ActorSystem) extends Controller {
   val helloActor = system.actorOf(HelloActor.props, "hello-actor")
 
   def index = Action {
-    Ok(views.html.index())
+    Ok(views.html.index.render())
   }
+
+
 
   def sayHello(name: String) = Action.async {
     (helloActor ? SayHello(name)).mapTo[String].map { message =>
@@ -32,10 +34,6 @@ class Application @Inject()(system: ActorSystem) extends Controller {
 
   def mostrarContador = Action {
     Ok(views.html.websocketCounter())
-  }
-
-  def test = Action {
-    Ok(views.html.listarPacientesJSON())
   }
 
   val dbActor = system.actorOf(DBActor.props, "db-actor")

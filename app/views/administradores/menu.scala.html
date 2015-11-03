@@ -1,0 +1,32 @@
+@main("Menu de Administración") {
+    <div class="row">
+        <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+                <img src="@routes.Assets.versioned("images/medicos.jpg")" alt="...">
+                <div class="caption">
+                    <h3>Médicos</h3>
+                    <p><a href="@routes.MedicoController.list()" class="btn btn-default" role="button">Ingresar</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+                <img src="@routes.Assets.versioned("images/pacientes.jpg")" alt="...">
+                <div class="caption">
+                    <h3>Pacientes</h3>
+                    <p><a href="@routes.PacienteController.list()" class="btn btn-default" role="button">Ingresar</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+                <img src="@routes.Assets.versioned("images/recepciones.jpg")" alt="...">
+                <div class="caption">
+                    <h3>Recepciones</h3>
+                    <p><a href="@routes.RecepcionController.list()" class="btn btn-default" role="button">Ingresar</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

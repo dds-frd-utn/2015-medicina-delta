@@ -8,7 +8,6 @@ GET         /sayHello/:name                   controllers.Application.sayHello(n
 GET         /reverser/                        controllers.Application.reverser
 GET         /                                 controllers.Application.index
 GET         /websocket/                       controllers.Application.sendJSON
-#GET         /getPacientes                     controllers.Application.getPacientes
 GET         /contador/                        controllers.Application.contador
 GET         /mostrarContador/                 controllers.Application.mostrarContador
 GET         /jsonManager/                     controllers.Application.jsonManager
@@ -30,6 +29,7 @@ GET         /administradores/                 controllers.AdminController.list
 GET         /administradores/agregar/         controllers.AdminController.add
 POST        /administradores/                 controllers.AdminController.insert
 GET         /administradores/:id              controllers.AdminController.getByID(id:Long)
+GET         /administradores/menu/            controllers.AdminController.menu
 
 # Recepcion
 GET         /recepciones/                     controllers.RecepcionController.list

@@ -1,11 +1,9 @@
 package controllers
 
 import java.time.LocalDateTime
-import controllers.responses.{ErrorResponse, SuccessResponse}
 import models.{DatosRecepcion, Recepcion}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
-import scala.concurrent.Future
 import play.api.data.Form
 import play.api.data.Forms._
 import scala.concurrent.Future
@@ -28,7 +26,7 @@ class RecepcionController extends Controller {
   def list = Action.async {
     val recepciones: Future[Seq[Recepcion]] = Recepcion.listar
     val respuesta = recepciones.map { r =>
-      Ok(Json.toJson(SuccessResponse(r)))
+      Ok(Json.toJson(r))
     }
     respuesta
   }
@@ -50,7 +48,7 @@ class RecepcionController extends Controller {
       datosDeLaRecepcion.prioridad
     )
     val recepcionCreada = Recepcion.create(nuevaRecepcion)
-    recepcionCreada.map { _ => Redirect(routes.RecepcionController.list) }
+    recepcionCreada.map { _ => Redirect(routes.RecepcionController.list()) }
   }
 
   def getByID(recepcionID: Long) = Action.async { request =>
@@ -58,8 +56,8 @@ class RecepcionController extends Controller {
 
     recepcion.map { r =>
       r.fold {
-        NotFound(Json.toJson(ErrorResponse(2, "No encontrado")))
-      } { e => Ok(Json.toJson(SuccessResponse(r))) }
+        NotFound(Json.toJson("No encontrado"))
+      } { e => Ok(Json.toJson(r)) }
     }
   }
 
@@ -71,7 +69,7 @@ class RecepcionController extends Controller {
 
   def getByPaciente(pacienteID: Long) = Action.async { request =>
     val recepcionesDelPaciente: Future[Seq[Recepcion]] = Recepcion.getByPaciente(pacienteID)
-    val respuesta = recepcionesDelPaciente map { r => Ok(Json.toJson(SuccessResponse(r))) }
+    val respuesta = recepcionesDelPaciente map { r => Ok(Json.toJson(r)) }
     respuesta
   }
 
