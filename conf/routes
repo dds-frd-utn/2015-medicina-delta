@@ -4,8 +4,6 @@
 
 # Home page
 # Pruebas de actores
-GET         /sayHello/:name                   controllers.Application.sayHello(name:String)
-GET         /reverser/                        controllers.Application.reverser
 GET         /                                 controllers.Application.index
 GET         /websocket/                       controllers.Application.sendJSON
 GET         /contador/                        controllers.Application.contador
