@@ -1,0 +1,11 @@
+@(loginForm : Form[(String, String)])(implicit messages: Messages)
+@import helper._
+
+@main("Iniciar Sesión") {
+
+  @helper.form(action = routes.Auth.authenticate()) {
+    @inputText(loginForm("usuario"))
+    @inputText(loginForm("password"))
+    <input type="submit" value="Submit">
+  }
+}

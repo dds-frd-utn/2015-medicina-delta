@@ -3,6 +3,8 @@
 # ~~~~
 
 # Home page
+GET         /login/                           controllers.Auth.login
+POST        /login/                           controllers.Auth.authenticate
 # Pruebas de actores
 GET         /                                 controllers.Application.index
 GET         /websocket/                       controllers.Application.sendJSON

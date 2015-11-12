@@ -12,7 +12,7 @@ class RecepcionistaActor(outChannel: ActorRef) extends Actor {
 }
 
 object RecepcionistaActor {
-  def props(outChannel: ActorRef) = Props(classOf[Reverser], outChannel)
+  def props(outChannel: ActorRef) = Props(classOf[RecepcionistaActor], outChannel)
 
   // mensajes que puede recibir
 
