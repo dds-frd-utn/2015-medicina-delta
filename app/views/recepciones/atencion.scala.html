@@ -1,0 +1,55 @@
+@(tupla: (Recepcion, Paciente, Medico))
+
+<!-- Modal -->
+<tr>
+    <th>@tupla._1.id</th>
+    <th>@tupla._2.nombre</th>
+    <th>@tupla._3.nombre</th>
+    <th><button id="@("boton" + tupla._1.id)" type="button" onclick="atender(@tupla._1.id)" class="btn btn-default">
+        En Espera</button>
+    </th>
+</tr>
+<div id="@("AtencionModal" + tupla._1.id.toString)" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+            <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Atención</h4>
+            </div>
+            <div class="modal-body">
+                <p>Horario de Atencion: @(tupla._1.fecha.getHour)</p>
+                <p>Paciente: @(tupla._2.nombre + tupla._2.apellido)</p>
+                <p>Medico: @(tupla._3.nombre + tupla._3.apellido)</p>
+            </div>
+            <div class="modal-footer">
+                <button id="botonAceptar" type="button" onclick="enviar(@(tupla._1.id))" class="btn btn-default" data-dismiss="modal">
+                    Aceptar</button>
+                <button id="botonCancelar" type="button" onclick="cancelar(@(tupla._1.id))" class="btn btn-default" data-dismiss="modal">
+                    Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        function atender(r) {
+            var id = r;
+            var boton = document.getElementById("boton" + id);
+            boton.innerHTML = "Atendido";
+            $('#AtencionModal' + id).modal('toggle');
+            console.log("Atendiendo a " + id);
+            websocket.send(id);
+        }
+
+        function enviar(id) {
+            // aca se deberia enviar el diagnostico y luego de guardarlo matar la recepcion
+            console.log("Atendida la recepcion " + id);
+
+        }
+
+        function cancelar(id) {
+            var boton = document.getElementById("boton" + id);
+            boton.innerHTML = "En Espera";
+        }
+</script>

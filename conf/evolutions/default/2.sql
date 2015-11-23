@@ -1,4 +1,5 @@
 INSERT INTO PACIENTES
 (ID, NOMBRE, APELLIDO, DNI, OBRASOCIAL)
 VALUES
-  (1, 'Juan', 'Bono', 38346926, 1);
+  (1, 'Juan', 'Bono', 38346926, 1),
+;

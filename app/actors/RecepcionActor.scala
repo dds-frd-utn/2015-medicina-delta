@@ -1,7 +1,7 @@
 package actors
 
 
-import actors.RecepcionActor.{EsDiagnosticado, EsAtendido}
+import actors.RecepcionActor.{atencionFinalizada, EsDiagnosticado, EsAtendido}
 import akka.actor._
 
 class RecepcionActor extends Actor {
@@ -10,12 +10,19 @@ class RecepcionActor extends Actor {
 
   def atendido: Receive = {
     case EsAtendido(tiempo: Long) => // hacer algo
-    case EsDiagnosticado(diag: String) => // hacer algo
+    case EsDiagnosticado(id: Long, diag: String) => // hacer algo
+    case atencionFinalizada(id: Long) =>
   }
 
   def receive = {
-    case EsAtendido(tiempo: Long) => become(atendido) // hacer algo mas, usando el tiempo
-    case EsDiagnosticado(diag: String) => // hacer algo
+    case "sarasa" => {
+      sender ! "Ah re locoo"
+    }
+    case EsAtendido(tiempo: Long) => {
+      become(atendido)
+    } // hacer algo mas, usando el tiempo
+    case EsDiagnosticado(id: Long, diag: String) => sender() ! "Error"
+    case atencionFinalizada(id: Long) =>
   }
 }
 
@@ -26,7 +33,9 @@ object RecepcionActor {
   case class EsAtendido(tiempo: Long)
 
   // recibe el diagnostico enviado por el medico
-  case class EsDiagnosticado(diag: String)
+  case class EsDiagnosticado(id: Long, diag: String)
 
+  //finaliza el actor
+  case class atencionFinalizada(id: Long)
 
 }

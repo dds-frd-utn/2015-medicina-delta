@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
+@(listaTruplas: Seq[(Recepcion, Paciente, Medico)])
+@import views.html.recepciones.atencion
 
-</body>
-</html>
+@main("Pacientes") {
+
+    <table class="table">
+        <tr>
+            <th>id</th>
+            <th>Nombre</th>
+            <th>Medico</th>
+            <th>Estado</th>
+        </tr>
+        @for( t <- listaTruplas) {
+            @atencion(t)
+        }
+    </table>
+    <script>
+            var websocket = new WebSocket("ws://localhost:9000/recepcionista/");
+            websocket.onmessage = function (event) {
+                console.log("Se recibio un mensaje: ");
+                console.log(event.data);
+            };
+    </script>
+
+
+}

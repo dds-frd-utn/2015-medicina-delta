@@ -2,15 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+# Autenticacion
 GET         /login/                           controllers.Auth.login
 POST        /login/                           controllers.Auth.authenticate
-# Pruebas de actores
+
+# no se me ocurre titul
 GET         /                                 controllers.Application.index
-GET         /websocket/                       controllers.Application.sendJSON
-GET         /contador/                        controllers.Application.contador
-GET         /mostrarContador/                 controllers.Application.mostrarContador
-GET         /jsonManager/                     controllers.Application.jsonManager
+GET         /recepcionista/                   controllers.RecepcionController.recepcionista
 
 # Paciente
 GET         /pacientes/                       controllers.PacienteController.list

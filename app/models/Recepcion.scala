@@ -3,6 +3,7 @@ package models
 
 import java.sql.{Timestamp, Date}
 
+import akka.actor.ActorRef
 import play.api.Play._
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Format}
@@ -25,14 +26,14 @@ case class Recepcion(
                       fecha: LocalDateTime,
                       diagnostico: Option[String],
                       prioridad: String
-                      )
+                    )
 
 case class DatosRecepcion(
                            idPaciente: Long,
                            idMedico: Long,
                            diagnostico: Option[String],
                            prioridad: String
-                           )
+                         )
 
 object Recepcion {
   implicit val format: Format[Recepcion] = Json.format[Recepcion]
@@ -45,9 +46,9 @@ object Recepcion {
 
 
     implicit val localDateTimeColumn = MappedColumnType.base[LocalDateTime, Timestamp](
-    d => Timestamp.from(d.toInstant(ZoneOffset.ofHours(0))),
-    d => d.toLocalDateTime
-  )
+      d => Timestamp.from(d.toInstant(ZoneOffset.ofHours(0))),
+      d => d.toLocalDateTime
+    )
 
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
 
@@ -75,23 +76,35 @@ object Recepcion {
     db.run(listaDeRecepciones)
   }
 
+  // dada una recepcion devuelve una 3-upla (recepcion,paciente,medico)
+  def recepcionToTriple(r: Recepcion): Future[(Recepcion, Paciente, Medico)] = {
+    for {
+      p <- Paciente.getByID(r.idPaciente)
+      m <- Medico.getByID(r.idMedico)
+    } yield (r, p.get, m.get)
+  }
+
+
   def getByID(idRecepcion: Long): Future[Option[Recepcion]] = {
-    val recepcionByID = tabla.filter { f => f.id === idRecepcion }.
-      result.headOption
+    val recepcionByID = tabla.filter {
+      f => f.id === idRecepcion
+    }.result.headOption
 
     db.run(recepcionByID)
   }
 
   def getByPaciente(idPaciente: Long): Future[Seq[Recepcion]] = {
-    val recepcionesByPaciente = tabla.filter { r => r.idPaciente === idPaciente }.
-      result
+    val recepcionesByPaciente = tabla.filter {
+      r => r.idPaciente === idPaciente
+    }.result
 
     db.run(recepcionesByPaciente)
   }
 
   def getByMedico(idMedico: Long): Future[Seq[Recepcion]] = {
-    val recepcionesByMedico = tabla.filter { r => r.idMedico === idMedico }.
-      result
+    val recepcionesByMedico = tabla.filter {
+      r => r.idMedico === idMedico
+    }.result
 
     db.run(recepcionesByMedico)
   }
@@ -101,8 +114,9 @@ object Recepcion {
 
     val insertedIDFuture = db.run(insercion)
 
-    val copiaRecepcion: Future[Recepcion] = insertedIDFuture.map { nuevaID =>
-      recepcion.copy(id = nuevaID)
+    val copiaRecepcion: Future[Recepcion] = insertedIDFuture.map {
+      nuevaID =>
+        recepcion.copy(id = nuevaID)
     }
 
     copiaRecepcion

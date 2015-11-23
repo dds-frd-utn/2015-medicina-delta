@@ -22,7 +22,6 @@ CREATE TABLE RECEPCIONES (
   idMedico    INTEGER,
   idPaciente  INTEGER,
   diagnostico VARCHAR,
-  estado      INT,
   prioridad   VARCHAR,
   fecha       DATETIME,
   FOREIGN KEY (idMedico) REFERENCES MEDICOS (id),

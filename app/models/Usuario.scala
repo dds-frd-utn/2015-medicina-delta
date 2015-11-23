@@ -7,14 +7,14 @@ import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
 
-
+// fijarse de juntar medicos y administradores en la misma tabla .
 sealed trait Usuario {
   val id: Long
   val nombre: String
   val apellido: String
   val usuario: String
   val password: String
-   val rol: String
+  val rol: String
 }
 
 final case class Medico(
@@ -24,7 +24,7 @@ final case class Medico(
                          matricula: Long,
                          usuario: String,
                          password: String
-                         )
+                       )
   extends Usuario {
   val rol = "medico"
 }
@@ -70,6 +70,13 @@ object Medico {
     db.run(docByID)
   }
 
+  def getByUserAndPass(username: String, pass: String): Future[Option[Medico]] = {
+    val docByUserAndPass = tabla.filter { f => f.usuario === username && f.password === pass }.
+      result.headOption
+
+    db.run(docByUserAndPass)
+  }
+
   def create(medico: Medico): Future[Medico] = {
     val insercion = (tabla returning tabla.map(_.id)) += medico
 
@@ -89,7 +96,7 @@ final case class Administrador(
                                 apellido: String,
                                 usuario: String,
                                 password: String
-                                )
+                              )
   extends Usuario {
   val rol = "administrador"
 }
@@ -131,6 +138,13 @@ object Administrador {
       result.headOption
 
     db.run(adminByID)
+  }
+
+  def getByUserAndPass(username: String, pass: String): Future[Option[Administrador]] = {
+    val docByUserAndPass = tabla.filter { f => f.usuario === username && f.password === pass }.
+      result.headOption
+
+    db.run(docByUserAndPass)
   }
 
   def create(admin: Administrador): Future[Administrador] = {

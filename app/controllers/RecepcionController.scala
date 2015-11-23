@@ -1,9 +1,11 @@
 package controllers
 
 import java.time.LocalDateTime
-import models.{DatosRecepcion, Recepcion}
+import javax.inject.Inject
+import actors.{RecepcionistaActor, RecepcionActor}
+import models.{Paciente, Medico, DatosRecepcion, Recepcion}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{WebSocket, Action, Controller}
 import play.api.data.Form
 import play.api.data.Forms._
 import scala.concurrent.Future
@@ -11,9 +13,10 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import java.util.UUID
+import akka.actor._
 
+class RecepcionController @Inject()(system: ActorSystem) extends Controller {
 
-class RecepcionController extends Controller {
 
   private val recepcionForm: Form[DatosRecepcion] = Form(
     mapping(
@@ -25,10 +28,35 @@ class RecepcionController extends Controller {
 
   def list = Action.async {
     val recepciones: Future[Seq[Recepcion]] = Recepcion.listar
-    val respuesta = recepciones.map { r =>
-      Ok(Json.toJson(r))
+    println(recepciones.toString)
+    recepciones.map { receps: Seq[Recepcion] =>
+      receps.foreach { r: Recepcion =>
+        val a = system.actorOf(RecepcionActor.props, "recepcion" + r.id.toString)
+        val actor: (Long, ActorRef) = (r.id, a)
+      }
+    }
+
+    val lista: Future[Seq[Future[(Recepcion, Paciente, Medico)]]] = recepciones.map { lst: Seq[Recepcion] =>
+      for {
+        r <- lst
+      } yield Recepcion.recepcionToTriple(r)
+    }
+
+    val respuesta = lista.flatMap { listaTruplas =>
+      val flip: Future[Seq[(Recepcion, Paciente, Medico)]] = Future.sequence(listaTruplas)
+      flip.map { lst =>
+        Ok(views.html.recepciones.index(lst))
+      }
+    }
+
+    respuesta
+    /*
+    val respuesta = recepciones.map { listaRecepciones =>
+      Ok(views.html.recepciones.index(listaRecepciones))
     }
     respuesta
+
+    */
   }
 
   def add = Action {
@@ -47,6 +75,7 @@ class RecepcionController extends Controller {
       datosDeLaRecepcion.diagnostico,
       datosDeLaRecepcion.prioridad
     )
+
     val recepcionCreada = Recepcion.create(nuevaRecepcion)
     recepcionCreada.map { _ => Redirect(routes.RecepcionController.list()) }
   }
@@ -73,4 +102,5 @@ class RecepcionController extends Controller {
     respuesta
   }
 
+  val recepcionista = WebSocket.acceptWithActor[String, String] { request => out => RecepcionistaActor.props(out) }
 }
