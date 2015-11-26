@@ -19,9 +19,13 @@
                 <h4 class="modal-title">Atención</h4>
             </div>
             <div class="modal-body">
-                <p>Horario de Atencion: @(tupla._1.fecha.getHour)</p>
-                <p>Paciente: @(tupla._2.nombre + tupla._2.apellido)</p>
-                <p>Medico: @(tupla._3.nombre + tupla._3.apellido)</p>
+                <p>Horario de Atencion: @({
+                    val h = tupla._1.fecha
+                    List(h.getDayOfMonth, h.getMonthValue, h.getHour, h.getMinute).map(_.toString).toString
+                })
+                </p>
+                <p>Paciente: @(tupla._2.nombre + " " + tupla._2.apellido)</p>
+                <p>Medico: @(tupla._3.nombre + " " + tupla._3.apellido)</p>
             </div>
             <div class="modal-footer">
                 <button id="botonAceptar" type="button" onclick="enviar(@(tupla._1.id))" class="btn btn-default" data-dismiss="modal">
@@ -45,7 +49,6 @@
         function enviar(id) {
             // aca se deberia enviar el diagnostico y luego de guardarlo matar la recepcion
             console.log("Atendida la recepcion " + id);
-
         }
 
         function cancelar(id) {

@@ -23,12 +23,7 @@ class MedicoController extends Controller {
     )(DatosMedico.apply)(DatosMedico.unapply))
 
   def list = Action.async {
-    val medicos: Future[Seq[Medico]] = Medico.listar
-
-    val respuesta = medicos.map { m =>
-      Ok(Json.toJson(m))
-    }
-
+    val respuesta = Medico.listar.map { listaDeMedicos => Ok(views.html.medicos.index(listaDeMedicos)) }
     respuesta
   }
 
@@ -48,6 +43,51 @@ class MedicoController extends Controller {
       datosDeMedico.password)
     val medicoCreado = Medico.create(nuevoMedico)
     medicoCreado.map { _ => Redirect(routes.MedicoController.list()) }
+  }
+
+  def edit(id: Long) = Action.async {
+    val medico = Medico.getByID(id)
+    val respuesta = medico.map { m =>
+      m.fold {
+        NotFound(Json.toJson("No encontrado"))
+      } { e =>
+        val datosMedico = DatosMedico(
+          nombre = m.get.nombre,
+          apellido = m.get.apellido,
+          matricula = m.get.matricula,
+          usuario = m.get.usuario,
+          password = m.get.password)
+        Ok(views.html.medicos.edit(medicoForm.fill(datosMedico), id))
+      }
+    }
+    respuesta
+  }
+
+  def update(id: Long) = Action.async { implicit request =>
+    val dat: DatosMedico = medicoForm.bindFromRequest.get
+    val medico = Medico.getByID(id)
+
+    val respuesta = medico.map { m =>
+      m.fold {
+        NotFound(Json.toJson("No encontrado"))
+      } { e =>
+        // pasar esto a la clase del modelo
+        val medicoActualizado = m.get.copy(
+          nombre = dat.nombre,
+          apellido = dat.apellido,
+          matricula = dat.matricula,
+          usuario = dat.usuario,
+          password = dat.password)
+        Medico.update(id, medicoActualizado)
+        Redirect(routes.MedicoController.list())
+      }
+    }
+    respuesta
+  }
+
+  def delete(id: Long) = Action {
+    Medico.delete(id)
+    Redirect(routes.MedicoController.list())
   }
 
   def getByID(medicoID: Long) = Action.async { request =>

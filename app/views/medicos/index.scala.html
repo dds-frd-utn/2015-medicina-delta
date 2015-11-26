@@ -1,10 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
+@(listaDeMedicos: Seq[Medico])
 
-</body>
-</html>
+@main("Listado de Médicos") {
+
+    <h2>Listado de Médicos</h2>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Matricula</th>
+                <th>Acciones</th>
+            </tr>
+
+        </thead>
+        <tbody>
+        @for( m <- listaDeMedicos) {
+            <tr>
+                <td>@m.id</td>
+                <td>@m.nombre</td>
+                <td>@m.apellido</td>
+                <td>@m.matricula</td>
+                <td><button class="button"><a href="@routes.MedicoController.edit(m.id)">
+                    Editar
+                </a>
+                </button>
+                    <button class="button"><a href="@routes.MedicoController.delete(m.id)">
+                        Eliminar
+                    </a>
+                    </button>
+                </td>
+
+            </tr>
+        }
+        </tbody>
+    </table>
+}

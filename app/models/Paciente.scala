@@ -13,7 +13,7 @@ case class Paciente(
                      apellido: String,
                      dni: Long,
                      obraSocial: Int
-                     )
+                   )
 
 case class DatosPaciente(nombre: String, apellido: String, dni: Long, obrasocial: Int)
 
@@ -57,20 +57,28 @@ object Paciente {
   def getByID(idPaciente: Long): Future[Option[Paciente]] = {
     val pacienteByID = tabla.filter { f => f.id === idPaciente }.
       result.headOption
-
     db.run(pacienteByID)
   }
 
   def create(paciente: Paciente): Future[Paciente] = {
     val insercion = (tabla returning tabla.map(_.id)) += paciente
-
     val insertedIDFuture = db.run(insercion)
-
     val copiaPaciente: Future[Paciente] = insertedIDFuture.map { nuevaID =>
       paciente.copy(id = nuevaID)
     }
-
     copiaPaciente
+  }
+
+  def update(id: Long, p1: Paciente) = {
+    val q = for {p <- tabla if p.id === id} yield p
+    val updateAction = q.update(p1)
+    db.run(updateAction)
+  }
+
+  def delete(idPaciente: Long) = {
+    val q = tabla.filter(_.id === idPaciente)
+    val deleteAction = q.delete
+    db.run(deleteAction)
   }
 
 }

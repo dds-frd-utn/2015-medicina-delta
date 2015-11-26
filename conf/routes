@@ -3,40 +3,50 @@
 # ~~~~
 
 # Autenticacion
-GET         /login/                           controllers.Auth.login
-POST        /login/                           controllers.Auth.authenticate
+GET         /login/                              controllers.Auth.login
+POST        /login/                              controllers.Auth.authenticate
 
 # no se me ocurre titul
-GET         /                                 controllers.Application.index
-GET         /recepcionista/                   controllers.RecepcionController.recepcionista
+GET         /                                    controllers.Application.index
+GET         /recepcionista/                      controllers.RecepcionController.recepcionista
 
 # Paciente
-GET         /pacientes/                       controllers.PacienteController.list
-GET         /pacientes/agregar/               controllers.PacienteController.add
-POST        /pacientes/                       controllers.PacienteController.insert
-GET         /pacientes/:id                    controllers.PacienteController.getByID(id:Long)
+GET         /pacientes/                          controllers.PacienteController.list
+GET         /pacientes/agregar/                  controllers.PacienteController.add
+GET         /pacientes/eliminar/:id              controllers.PacienteController.delete(id: Long)
+GET         /pacientes/editar/:id                controllers.PacienteController.edit(id: Long)
+POST        /pacientes/editar/:id                controllers.PacienteController.update(id: Long)
+POST        /pacientes/                          controllers.PacienteController.insert
+GET         /pacientes/:id                       controllers.PacienteController.getByID(id:Long)
+
 
 # Medico
-GET         /medicos/                         controllers.MedicoController.list
-GET         /medicos/agregar/                 controllers.MedicoController.add
-POST        /medicos/                         controllers.MedicoController.insert
-GET         /medicos/:id                      controllers.MedicoController.getByID(id:Long)
+GET         /medicos/                            controllers.MedicoController.list
+GET         /medicos/agregar/                    controllers.MedicoController.add
+GET         /medicos/eliminar/:id                controllers.MedicoController.delete(id: Long)
+GET         /medicos/editar/:id                  controllers.MedicoController.edit(id: Long)
+POST        /medicos/editar/:id                  controllers.MedicoController.update(id: Long)
+POST        /medicos/                            controllers.MedicoController.insert
+GET         /medicos/:id                         controllers.MedicoController.getByID(id :Long)
 
 # Administrador
-GET         /administradores/                 controllers.AdminController.list
-GET         /administradores/agregar/         controllers.AdminController.add
-POST        /administradores/                 controllers.AdminController.insert
-GET         /administradores/:id              controllers.AdminController.getByID(id:Long)
-GET         /administradores/menu/            controllers.AdminController.menu
+GET         /administradores/                    controllers.AdminController.list
+GET         /administradores/agregar/            controllers.AdminController.add
+GET         /administradores/eliminar/:id        controllers.AdminController.delete(id: Long)
+GET         /administradores/editar/:id          controllers.AdminController.edit(id: Long)
+POST        /administradores/editar/:id          controllers.AdminController.update(id: Long)
+POST        /administradores/                    controllers.AdminController.insert
+GET         /administradores/:id                 controllers.AdminController.getByID(id:Long)
+GET         /administradores/menu/               controllers.AdminController.menu
 
 # Recepcion
-GET         /recepciones/                     controllers.RecepcionController.list
-GET         /recepciones/agregar/             controllers.RecepcionController.add
-POST        /recepciones/                     controllers.RecepcionController.insert
-GET         /recepciones/:id/pacientes        controllers.RecepcionController.getByMedico(id:Long)
-GET         /recepciones/:id/turnos           controllers.RecepcionController.getByPaciente(id:Long)
-GET         /recepciones/:id                  controllers.RecepcionController.getByID(id:Long)
+GET         /recepciones/                        controllers.RecepcionController.list
+GET         /recepciones/agregar/                controllers.RecepcionController.add
+POST        /recepciones/                        controllers.RecepcionController.insert
+GET         /recepciones/:id/pacientes           controllers.RecepcionController.getByMedico(id:Long)
+GET         /recepciones/:id/turnos              controllers.RecepcionController.getByPaciente(id:Long)
+GET         /recepciones/:id                     controllers.RecepcionController.getByID(id:Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                     controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                        controllers.Assets.versioned(path="/public", file: Asset)
 

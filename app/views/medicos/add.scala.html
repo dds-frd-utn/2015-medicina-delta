@@ -2,6 +2,7 @@
 @import helper._
 @main("Agregar Médico") {
 
+    <h2>Añadir Médico</h2>
     @helper.form(action = routes.MedicoController.insert) {
         @inputText(medicoform("nombre"))
         @inputText(medicoform("apellido"))

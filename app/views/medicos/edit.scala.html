@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
+@(medicoform: Form[DatosMedico], id: Long)(implicit messages: Messages)
+@import helper._
+@main("Editar Médico") {
 
-</body>
-</html>
+    <h2>Editar Médico</h2>
+    @helper.form(action = routes.MedicoController.update(id)) {
+        @inputText(medicoform("nombre"))
+        @inputText(medicoform("apellido"))
+        @inputText(medicoform("matricula"))
+        @inputText(medicoform("usuario"))
+        @inputPassword(medicoform("password"))
+        <input type="submit" value="Submit">
+    }
+}

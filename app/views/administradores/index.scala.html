@@ -1,10 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
+@(listaDeAdministradores: Seq[Administrador])
 
-</body>
-</html>
+@main("Listado de Administradores") {
+
+    <h2>Listado de Administradores</h2>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Acciones</th>
+            </tr>
+
+        </thead>
+        <tbody>
+        @for( a <- listaDeAdministradores) {
+            <tr>
+                <td>@a.id</td>
+                <td>@a.nombre</td>
+                <td>@a.apellido</td>
+                <td><button class="button"><a href="@routes.AdminController.edit(a.id)">
+                    Editar
+                </a>
+                </button>
+                    <button class="button"><a href="@routes.AdminController.delete(a.id)">
+                        Eliminar
+                    </a>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

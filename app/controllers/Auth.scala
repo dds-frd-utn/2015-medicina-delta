@@ -12,7 +12,7 @@ class Auth extends Controller {
     tuple(
       "usuario" -> text,
       "password" -> text
-    ) verifying ("Invalid email or password", result => result match {
+    ) verifying("Invalid email or password", result => result match {
       case (usuario, password) => check(usuario, password)
     })
   )

@@ -88,6 +88,19 @@ object Medico {
 
     copiaMedico
   }
+
+  def update(id: Long, m2: Medico) = {
+    val m = for {m1 <- tabla if m1.id === id} yield m1
+    val updateAction = m.update(m2)
+    db.run(updateAction)
+  }
+
+  def delete(idMedico: Long) = {
+    val q = tabla.filter(_.id === idMedico)
+    val deleteAction = q.delete
+    db.run(deleteAction)
+  }
+
 }
 
 final case class Administrador(
@@ -158,4 +171,17 @@ object Administrador {
 
     copiaAdmin
   }
+
+  def update(id: Long, a2: Administrador) = {
+    val q = for {a1 <- tabla if a1.id === id} yield a1
+    val updateAction = q.update(a2)
+    db.run(updateAction)
+  }
+
+  def delete(idAdmin: Long) = {
+    val q = tabla.filter(_.id === idAdmin)
+    val deleteAction = q.delete
+    db.run(deleteAction)
+  }
+
 }

@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
+@(adminform: Form[DatosAdmin], id: Long)(implicit messages: Messages)
+@import helper._
+@main("Editar Administrador") {
 
-</body>
-</html>
+  @helper.form(action = routes.AdminController.update(id)) {
+    @inputText(adminform("nombre"))
+    @inputText(adminform("apellido"))
+    @inputText(adminform("usuario"))
+    @inputPassword(adminform("password"))
+    <input type="submit" value="Submit">
+  }
+
+}

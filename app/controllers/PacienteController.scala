@@ -15,7 +15,7 @@ import play.api.i18n.Messages.Implicits._
 
 class PacienteController extends Controller {
 
-  private val formularioPaciente: Form[DatosPaciente] = Form(
+  private val pacienteForm: Form[DatosPaciente] = Form(
     mapping(
       "nombre" -> text,
       "apellido" -> text,
@@ -25,14 +25,12 @@ class PacienteController extends Controller {
   )
 
   def add = Action {
-    Ok(views.html.pacientes.add(formularioPaciente))
+    Ok(views.html.pacientes.add(pacienteForm))
   }
 
   def list = Action.async {
-    val pacientes: Future[Seq[Paciente]] = Paciente.listar
-
-    val respuesta = pacientes.map { p =>
-      Ok(Json.toJson(p))
+    val respuesta = Paciente.listar.map { listaDePacientes =>
+      Ok(views.html.pacientes.index(listaDePacientes))
     }
     respuesta
   }
@@ -50,11 +48,52 @@ class PacienteController extends Controller {
   }
 
   def insert = Action.async { implicit request =>
-    val datos: DatosPaciente = formularioPaciente.bindFromRequest.get
+    val datos: DatosPaciente = pacienteForm.bindFromRequest.get
     val idNueva = UUID.randomUUID.getLeastSignificantBits
     val nuevoPaciente: Paciente = Paciente(idNueva, datos.nombre, datos.apellido, datos.dni, datos.obrasocial)
     val pacienteCreado = Paciente.create(nuevoPaciente)
     pacienteCreado.map { _ => Redirect(routes.PacienteController.list()) }
   }
 
+  def edit(id: Long) = Action.async {
+    val paciente = Paciente.getByID(id)
+    val respuesta = paciente.map { p =>
+      p.fold {
+        NotFound(Json.toJson("No encontrado"))
+      } { e =>
+        val datosPaciente = DatosPaciente(
+          nombre = p.get.nombre,
+          apellido = p.get.apellido,
+          dni = p.get.dni,
+          obrasocial = p.get.obraSocial)
+        Ok(views.html.pacientes.edit(pacienteForm.fill(datosPaciente), id))
+      }
+    }
+    respuesta
+  }
+
+  def update(id: Long) = Action.async { implicit request =>
+    val dat: DatosPaciente = pacienteForm.bindFromRequest.get
+    val paciente = Paciente.getByID(id)
+
+    val respuesta = paciente.map { p =>
+      p.fold {
+        NotFound(Json.toJson("No encontrado"))
+      } { e =>
+        val pacienteActualizado = p.get.copy(
+          nombre = dat.nombre,
+          apellido = dat.apellido,
+          dni = dat.dni,
+          obraSocial = dat.obrasocial)
+        Paciente.update(id, pacienteActualizado)
+        Redirect(routes.PacienteController.list())
+      }
+    }
+    respuesta
+  }
+
+  def delete(id: Long) = Action {
+    Paciente.delete(id)
+    Redirect(routes.PacienteController.list())
+  }
 }

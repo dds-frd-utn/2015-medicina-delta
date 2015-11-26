@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
+@(pform: Form[DatosPaciente], id: Long)(implicit messages: Messages)
+@import helper._
+@main("Agregar Paciente") {
 
-</body>
-</html>
+  @helper.form(action = routes.PacienteController.update(id)) {
+    @inputText(pform("nombre"))
+    @inputText(pform("apellido"))
+    @inputText(pform("dni"))
+    @inputText(pform("obrasocial"))
+
+    <input type="submit" value="Submit">
+  }
+
+}
