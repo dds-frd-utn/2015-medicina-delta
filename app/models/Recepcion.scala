@@ -111,15 +111,10 @@ object Recepcion {
 
   def create(recepcion: Recepcion): Future[Recepcion] = {
     val insercion = (tabla returning tabla.map(_.id)) += recepcion
-
-    val insertedIDFuture = db.run(insercion)
-
-    val copiaRecepcion: Future[Recepcion] = insertedIDFuture.map {
+    db.run(insercion).map {
       nuevaID =>
         recepcion.copy(id = nuevaID)
     }
-
-    copiaRecepcion
   }
 
 }

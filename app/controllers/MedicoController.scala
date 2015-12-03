@@ -1,12 +1,10 @@
 package controllers
 
-import java.util.UUID
 import models.{Medico, DatosMedico}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
-import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -23,8 +21,7 @@ class MedicoController extends Controller {
     )(DatosMedico.apply)(DatosMedico.unapply))
 
   def list = Action.async {
-    val respuesta = Medico.listar.map { listaDeMedicos => Ok(views.html.medicos.index(listaDeMedicos)) }
-    respuesta
+    Medico.listar.map { listaDeMedicos => Ok(views.html.medicos.index(listaDeMedicos)) }
   }
 
   def add = Action {
@@ -32,57 +29,34 @@ class MedicoController extends Controller {
   }
 
   def insert = Action.async { implicit request =>
-    val datosDeMedico: DatosMedico = medicoForm.bindFromRequest.get
-    val idNueva = UUID.randomUUID.getLeastSignificantBits
-    val nuevoMedico: Medico = Medico(
-      idNueva,
-      datosDeMedico.nombre,
-      datosDeMedico.apellido,
-      datosDeMedico.matricula,
-      datosDeMedico.usuario,
-      datosDeMedico.password)
-    val medicoCreado = Medico.create(nuevoMedico)
-    medicoCreado.map { _ => Redirect(routes.MedicoController.list()) }
+    val datos: DatosMedico = medicoForm.bindFromRequest.get
+    val nuevoMedico: Medico = Medico.fromDatos(datos)
+
+    Medico.create(nuevoMedico).map { _ => Redirect(routes.MedicoController.list()) }
   }
 
   def edit(id: Long) = Action.async {
-    val medico = Medico.getByID(id)
-    val respuesta = medico.map { m =>
+    Medico.getByID(id).map { m: Option[Medico] =>
       m.fold {
         NotFound(Json.toJson("No encontrado"))
       } { e =>
-        val datosMedico = DatosMedico(
-          nombre = m.get.nombre,
-          apellido = m.get.apellido,
-          matricula = m.get.matricula,
-          usuario = m.get.usuario,
-          password = m.get.password)
-        Ok(views.html.medicos.edit(medicoForm.fill(datosMedico), id))
+        Ok(views.html.medicos.edit(medicoForm.fill(Medico.toDatos(m.get)), id))
       }
     }
-    respuesta
+
   }
 
   def update(id: Long) = Action.async { implicit request =>
     val dat: DatosMedico = medicoForm.bindFromRequest.get
-    val medico = Medico.getByID(id)
-
-    val respuesta = medico.map { m =>
+    Medico.getByID(id).map { m =>
       m.fold {
         NotFound(Json.toJson("No encontrado"))
       } { e =>
-        // pasar esto a la clase del modelo
-        val medicoActualizado = m.get.copy(
-          nombre = dat.nombre,
-          apellido = dat.apellido,
-          matricula = dat.matricula,
-          usuario = dat.usuario,
-          password = dat.password)
-        Medico.update(id, medicoActualizado)
+        Medico.update(id, m.get, dat)
         Redirect(routes.MedicoController.list())
       }
     }
-    respuesta
+
   }
 
   def delete(id: Long) = Action {
@@ -91,15 +65,10 @@ class MedicoController extends Controller {
   }
 
   def getByID(medicoID: Long) = Action.async { request =>
-    val medico = Medico.getByID(medicoID)
-
-    medico.map { m =>
+    Medico.getByID(medicoID).map { m =>
       m.fold {
         NotFound(Json.toJson("No encontrado"))
-      } { e =>
-        Ok(Json.toJson(m))
-      }
+      } { e => Ok(Json.toJson(m)) }
     }
   }
-
 }

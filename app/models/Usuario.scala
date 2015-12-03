@@ -1,5 +1,7 @@
 package models
 
+import java.util.UUID
+
 import play.api.Play._
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Format}
@@ -79,19 +81,20 @@ object Medico {
 
   def create(medico: Medico): Future[Medico] = {
     val insercion = (tabla returning tabla.map(_.id)) += medico
-
-    val insertedIDFuture = db.run(insercion)
-
-    val copiaMedico: Future[Medico] = insertedIDFuture.map { nuevaID =>
+    db.run(insercion).map { nuevaID =>
       medico.copy(id = nuevaID)
     }
-
-    copiaMedico
   }
 
-  def update(id: Long, m2: Medico) = {
-    val m = for {m1 <- tabla if m1.id === id} yield m1
-    val updateAction = m.update(m2)
+  def update(id: Long, m1: Medico, d: DatosMedico) = {
+    val medicoActualizado = m1.copy(
+      nombre = d.nombre,
+      apellido = d.apellido,
+      matricula = d.matricula,
+      usuario = d.usuario,
+      password = d.password)
+    val q = for {m <- tabla if m.id === id} yield m
+    val updateAction = q.update(medicoActualizado)
     db.run(updateAction)
   }
 
@@ -101,6 +104,14 @@ object Medico {
     db.run(deleteAction)
   }
 
+  def fromDatos(d: DatosMedico) = {
+    val idNueva = UUID.randomUUID.getLeastSignificantBits
+    Medico(idNueva, d.nombre, d.apellido, d.matricula, d.usuario, d.password)
+  }
+
+  def toDatos(m: Medico) = {
+    DatosMedico(m.nombre, m.apellido, m.matricula, m.usuario, m.password)
+  }
 }
 
 final case class Administrador(
@@ -162,19 +173,19 @@ object Administrador {
 
   def create(admin: Administrador): Future[Administrador] = {
     val insercion = (tabla returning tabla.map(_.id)) += admin
-
-    val insertedIDFuture = db.run(insercion)
-
-    val copiaAdmin: Future[Administrador] = insertedIDFuture.map { nuevaID =>
+    db.run(insercion).map { nuevaID =>
       admin.copy(id = nuevaID)
     }
-
-    copiaAdmin
   }
 
-  def update(id: Long, a2: Administrador) = {
-    val q = for {a1 <- tabla if a1.id === id} yield a1
-    val updateAction = q.update(a2)
+  def update(id: Long, admin: Administrador, datos: DatosAdmin) = {
+    val adminActualizado = admin.copy(
+      nombre = datos.nombre,
+      apellido = datos.apellido,
+      usuario = datos.usuario,
+      password = datos.password)
+    val q = for {a <- tabla if a.id === id} yield a
+    val updateAction = q.update(adminActualizado)
     db.run(updateAction)
   }
 
@@ -182,6 +193,15 @@ object Administrador {
     val q = tabla.filter(_.id === idAdmin)
     val deleteAction = q.delete
     db.run(deleteAction)
+  }
+
+  def fromDatos(d: DatosAdmin) = {
+    val idNueva = UUID.randomUUID.getLeastSignificantBits
+    Administrador(idNueva, d.nombre, d.apellido, d.usuario, d.password)
+  }
+
+  def toDatos(a: Administrador) = {
+    DatosAdmin(a.nombre, a.apellido, a.usuario, a.password)
   }
 
 }

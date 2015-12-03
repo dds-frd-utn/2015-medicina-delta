@@ -1,13 +1,10 @@
 package controllers
 
-import java.util.UUID
-
 import models.{DatosAdmin, Administrador}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.mvc.{Controller, Action}
-import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -27,29 +24,19 @@ class AdminController extends Controller {
   }
 
   def insert = Action.async { implicit request =>
-    val datosDeAdmin: DatosAdmin = adminForm.bindFromRequest.get
-    val idNueva = UUID.randomUUID.getLeastSignificantBits
-    val nuevoAdmin = Administrador(
-      idNueva,
-      datosDeAdmin.nombre,
-      datosDeAdmin.apellido,
-      datosDeAdmin.usuario,
-      datosDeAdmin.password)
-    val adminCreado = Administrador.create(nuevoAdmin)
-    adminCreado.map { _ => Redirect(routes.AdminController.list()) }
+    val datos: DatosAdmin = adminForm.bindFromRequest.get
+    val nuevoAdmin = Administrador.fromDatos(datos)
+    Administrador.create(nuevoAdmin).map { _ => Redirect(routes.AdminController.list()) }
   }
 
   def list = Action.async {
-    val respuesta = Administrador.listar.map { listaDeAdministradores =>
+    Administrador.listar.map { listaDeAdministradores =>
       Ok(views.html.administradores.index(listaDeAdministradores))
     }
-    respuesta
   }
 
   def getByID(adminID: Long) = Action.async { request =>
-    val admin: Future[Option[Administrador]] = Administrador.getByID(adminID)
-
-    admin.map { a =>
+    Administrador.getByID(adminID).map { a =>
       a.fold {
         NotFound(Json.toJson("No encontrado"))
       } { e =>
@@ -63,41 +50,25 @@ class AdminController extends Controller {
   }
 
   def edit(id: Long) = Action.async {
-    val admin = Administrador.getByID(id)
-    val respuesta = admin.map { a =>
+    Administrador.getByID(id).map { a: Option[Administrador] =>
       a.fold {
         NotFound(Json.toJson("No encontrado"))
       } { e =>
-        val datosAdmin = DatosAdmin(
-          nombre = a.get.nombre,
-          apellido = a.get.apellido,
-          usuario = a.get.usuario,
-          password = a.get.password)
-        Ok(views.html.administradores.edit(adminForm.fill(datosAdmin), id))
+        Ok(views.html.administradores.edit(adminForm.fill(Administrador.toDatos(a.get)), id))
       }
     }
-    respuesta
   }
 
   def update(id: Long) = Action.async { implicit request =>
-    val dat: DatosAdmin = adminForm.bindFromRequest.get
-    val admin = Administrador.getByID(id)
-
-    val respuesta = admin.map { a =>
+    val datos: DatosAdmin = adminForm.bindFromRequest.get
+    Administrador.getByID(id).map { a: Option[Administrador] =>
       a.fold {
         NotFound(Json.toJson("No encontrado"))
       } { e =>
-        // pasar esto a la clase del modelo
-        val adminActualizado = a.get.copy(
-          nombre = dat.nombre,
-          apellido = dat.apellido,
-          usuario = dat.usuario,
-          password = dat.password)
-        Administrador.update(id, adminActualizado)
+        Administrador.update(id, a.get, datos)
         Redirect(routes.AdminController.list())
       }
     }
-    respuesta
   }
 
   def delete(id: Long) = Action {

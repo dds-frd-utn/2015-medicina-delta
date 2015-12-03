@@ -1,5 +1,7 @@
 package models
 
+import java.util.UUID
+
 import play.api.libs.json.{JsValue, Json, Format}
 import play.api.Play.current
 import play.api.db.slick.DatabaseConfigProvider
@@ -47,13 +49,6 @@ object Paciente {
     db.run(listaDePacientes)
   }
 
-  def listarJSON: Future[JsValue] = {
-    val listaDePacientes = tabla.result
-    val movida = db.run(listaDePacientes)
-    val movidaJSON = movida map { p => Json.toJson(p) }
-    movidaJSON
-  }
-
   def getByID(idPaciente: Long): Future[Option[Paciente]] = {
     val pacienteByID = tabla.filter { f => f.id === idPaciente }.
       result.headOption
@@ -62,16 +57,19 @@ object Paciente {
 
   def create(paciente: Paciente): Future[Paciente] = {
     val insercion = (tabla returning tabla.map(_.id)) += paciente
-    val insertedIDFuture = db.run(insercion)
-    val copiaPaciente: Future[Paciente] = insertedIDFuture.map { nuevaID =>
+    db.run(insercion).map { nuevaID =>
       paciente.copy(id = nuevaID)
     }
-    copiaPaciente
   }
 
-  def update(id: Long, p1: Paciente) = {
+  def update(id: Long, p1: Paciente, d: DatosPaciente) = {
+    val pacienteActualizado = p1.copy(
+      nombre = d.nombre,
+      apellido = d.apellido,
+      dni = d.dni,
+      obraSocial = d.obrasocial)
     val q = for {p <- tabla if p.id === id} yield p
-    val updateAction = q.update(p1)
+    val updateAction = q.update(pacienteActualizado)
     db.run(updateAction)
   }
 
@@ -81,4 +79,16 @@ object Paciente {
     db.run(deleteAction)
   }
 
+  def fromDatos(datos: DatosPaciente) = {
+    val idNueva = UUID.randomUUID.getLeastSignificantBits
+    Paciente(idNueva, datos.nombre, datos.apellido, datos.dni, datos.obrasocial)
+  }
+
+  def toDatos(p: Paciente) = {
+    DatosPaciente(
+      nombre = p.nombre,
+      apellido = p.apellido,
+      dni = p.dni,
+      obrasocial = p.obraSocial)
+  }
 }
