@@ -1,15 +1,29 @@
 @(medicoform: Form[DatosMedico])(implicit messages: Messages)
-@import helper._
 @main("Agregar Médico") {
 
     <h2>Añadir Médico</h2>
-    @helper.form(action = routes.MedicoController.insert) {
-        @inputText(medicoform("nombre"))
-        @inputText(medicoform("apellido"))
-        @inputText(medicoform("matricula"))
-        @inputText(medicoform("usuario"))
-        @inputPassword(medicoform("password"))
-        <input type="submit" value="Submit">
-    }
+    <form action="@routes.MedicoController.insert()" method="post">
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input name="nombre" type="text" class="form-control" id="nombre" placeholder="Nombre">
+        </div>
+        <div class="form-group">
+            <label for="apellido">Apellido</label>
+            <input name="apellido" type="text" class="form-control" id="apellido" placeholder="Apellido">
+        </div>
+        <div class="form-group">
+            <label for="matricula">Matricula</label>
+            <input name="matricula" type="number" class="form-control" id="matricula" placeholder="Matricula">
+        </div>
+        <div class="form-group">
+            <label for="usuario">Usuario</label>
+            <input name="usuario" type="text" class="form-control" id="usuario" placeholder="Usuario">
+        </div>
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input name="password" type="password" class="form-control" id="password" placeholder="Contraseña">
+        </div>
+        <button class="btn" type="submit" name="action">Aceptar</button>
+    </form>
 
 }

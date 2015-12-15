@@ -16,10 +16,6 @@
     </table>
     <script>
             var websocket = new WebSocket("ws://localhost:9000/recepcionista/");
-            websocket.onmessage = function (event) {
-                console.log("Se recibio un mensaje: ");
-                console.log(event.data);
-            };
     </script>
 
 

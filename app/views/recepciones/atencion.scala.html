@@ -37,10 +37,11 @@
     </div>
 </div>
 <script>
+        
         function atender(r) {
             var id = r;
-            var boton = document.getElementById("boton" + id);
-            boton.innerHTML = "Atendido";
+            //var boton = document.getElementById("boton" + id);
+            //boton.innerHTML = "Atendido";
             $('#AtencionModal' + id).modal('toggle');
             console.log("Atendiendo a " + id);
             websocket.send(id);
@@ -55,4 +56,10 @@
             var boton = document.getElementById("boton" + id);
             boton.innerHTML = "En Espera";
         }
+
+        websocket.onmessage = function (event) {
+            console.log(event.data);
+            var boton = document.getElementById("boton" + event.data);
+            boton.innerHTML = "Atendido"
+        };
 </script>

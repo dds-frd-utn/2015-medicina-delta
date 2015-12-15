@@ -1,13 +1,12 @@
 package models
 
 
-import java.sql.{Timestamp, Date}
+import java.sql.Timestamp
+import java.util.UUID
 
-import akka.actor.ActorRef
 import play.api.Play._
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Format}
-import slick.driver.H2Driver._
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
@@ -109,12 +108,18 @@ object Recepcion {
     db.run(recepcionesByMedico)
   }
 
-  def create(recepcion: Recepcion): Future[Recepcion] = {
-    val insercion = (tabla returning tabla.map(_.id)) += recepcion
+  def create(r: Recepcion): Future[Recepcion] = {
+    val insercion = (tabla returning tabla.map(_.id)) += r
     db.run(insercion).map {
       nuevaID =>
-        recepcion.copy(id = nuevaID)
+        r.copy(id = nuevaID)
     }
+  }
+
+  def fromDatos(d: DatosRecepcion) = {
+    val idNueva = UUID.randomUUID.getLeastSignificantBits
+    val fechaNueva = LocalDateTime.now
+    Recepcion(idNueva, d.idPaciente, d.idMedico, fechaNueva, d.diagnostico, d.prioridad)
   }
 
 }

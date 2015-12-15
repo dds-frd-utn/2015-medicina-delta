@@ -2,7 +2,7 @@ package models
 
 import java.util.UUID
 
-import play.api.libs.json.{JsValue, Json, Format}
+import play.api.libs.json.{Json, Format}
 import play.api.Play.current
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
@@ -55,10 +55,10 @@ object Paciente {
     db.run(pacienteByID)
   }
 
-  def create(paciente: Paciente): Future[Paciente] = {
-    val insercion = (tabla returning tabla.map(_.id)) += paciente
+  def create(p: Paciente): Future[Paciente] = {
+    val insercion = (tabla returning tabla.map(_.id)) += p
     db.run(insercion).map { nuevaID =>
-      paciente.copy(id = nuevaID)
+      p.copy(id = nuevaID)
     }
   }
 
@@ -79,16 +79,12 @@ object Paciente {
     db.run(deleteAction)
   }
 
-  def fromDatos(datos: DatosPaciente) = {
+  def fromDatos(d: DatosPaciente) = {
     val idNueva = UUID.randomUUID.getLeastSignificantBits
-    Paciente(idNueva, datos.nombre, datos.apellido, datos.dni, datos.obrasocial)
+    Paciente(idNueva, d.nombre, d.apellido, d.dni, d.obrasocial)
   }
 
   def toDatos(p: Paciente) = {
-    DatosPaciente(
-      nombre = p.nombre,
-      apellido = p.apellido,
-      dni = p.dni,
-      obrasocial = p.obraSocial)
+    DatosPaciente(p.nombre, p.apellido, p.dni, p.obraSocial)
   }
 }

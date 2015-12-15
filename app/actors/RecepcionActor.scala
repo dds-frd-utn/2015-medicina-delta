@@ -15,10 +15,9 @@ class RecepcionActor extends Actor {
   }
 
   def receive = {
-    case "sarasa" => {
-      sender ! "Ah re locoo"
-    }
     case EsAtendido(tiempo: Long) => {
+      println("Paciente atendido a las " + tiempo)
+      println("----------------------------------")
       become(atendido)
     } // hacer algo mas, usando el tiempo
     case EsDiagnosticado(id: Long, diag: String) => sender() ! "Error"

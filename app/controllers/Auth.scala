@@ -1,5 +1,6 @@
 package controllers
 
+import models.{Administrador, Medico}
 import play.api.data._
 import play.api.mvc.{Security, Action, Controller}
 import play.api.data.Forms._
@@ -18,7 +19,14 @@ class Auth extends Controller {
   )
 
   def check(username: String, password: String) = {
-    username == "admin" && password == "1234"
+    true
+    /*
+    for {
+      medicoOpt <- Medico.getByUserAndPass(username,password)
+      adminOpt <- Administrador.getByUserAndPass(username,password)
+    } yield medicoOpt getOrElse adminOpt.getOrElse(None)
+    debe devolver boolean :( 
+    */
   }
 
   def login = Action { implicit request =>
@@ -27,7 +35,9 @@ class Auth extends Controller {
 
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.login(formWithErrors)),
+      formWithErrors => {
+        BadRequest(views.html.login(formWithErrors))
+      },
       user => Redirect(routes.Application.index()).withSession(Security.username -> user._1)
     )
   }

@@ -29,7 +29,7 @@ class MedicoController extends Controller {
   }
 
   def insert = Action.async { implicit request =>
-    val datos: DatosMedico = medicoForm.bindFromRequest.get
+    val datos: DatosMedico = medicoForm.bindFromRequest().get
     val nuevoMedico: Medico = Medico.fromDatos(datos)
 
     Medico.create(nuevoMedico).map { _ => Redirect(routes.MedicoController.list()) }
@@ -47,7 +47,7 @@ class MedicoController extends Controller {
   }
 
   def update(id: Long) = Action.async { implicit request =>
-    val dat: DatosMedico = medicoForm.bindFromRequest.get
+    val dat: DatosMedico = medicoForm.bindFromRequest().get
     Medico.getByID(id).map { m =>
       m.fold {
         NotFound(Json.toJson("No encontrado"))
